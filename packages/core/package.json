@@ -1,0 +1,38 @@
+{
+  "name": "@css-modules-theme/core",
+  "version": "1.0.0-rc.1",
+  "description": "Fast and cacheable theming composition for CSS Modules",
+  "author": "Paul Klimashkin <paul.klimashkin@illumio.com>",
+  "homepage": "https://github.com/klimashkin/css-modules-theme/tree/master/packages/core#readme",
+  "license": "MIT",
+  "main": "dist/core.cjs.js",
+  "browser": "dist/core.umd.js",
+  "module": "dist/core.es.js",
+  "es2015": "dist/core.es2015.js",
+  "es2018": "dist/core.es2018.js",
+  "directories": {
+    "dist": "dist",
+    "src": "src"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "css",
+    "css-modules",
+    "theme",
+    "theming"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klimashkin/css-modules-theme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/klimashkin/css-modules-theme/issues"
+  }
+}

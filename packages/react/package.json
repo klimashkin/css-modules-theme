@@ -1,0 +1,46 @@
+{
+  "name": "@css-modules-theme/react",
+  "version": "1.0.0-rc.1",
+  "description": "Fast CSS Modules theming composition for react",
+  "author": "Paul Klimashkin <paul.klimashkin@illumio.com>",
+  "homepage": "https://github.com/klimashkin/css-modules-theme/tree/master/packages/react#readme",
+  "license": "MIT",
+  "main": "dist/react.cjs.js",
+  "browser": "dist/react.umd.js",
+  "module": "dist/react.es.js",
+  "es2015": "dist/react.es2015.js",
+  "es2018": "dist/react.es2018.js",
+  "directories": {
+    "dist": "dist",
+    "src": "src"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "css",
+    "css-modules",
+    "theme",
+    "theming",
+    "react",
+    "css-modules-react"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/klimashkin/css-modules-theme.git"
+  },
+  "bugs": {
+    "url": "https://github.com/klimashkin/css-modules-theme/issues"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0"
+  },
+  "dependencies": {
+    "@css-modules-theme/core": "^1.0.0"
+  }
+}
