@@ -1,6 +1,6 @@
 {
   "name": "@css-modules-theme/react",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0",
   "description": "Fast CSS Modules theming composition for react",
   "author": "Paul Klimashkin <paul.klimashkin@illumio.com>",
   "homepage": "https://github.com/klimashkin/css-modules-theme/tree/master/packages/react#readme",
