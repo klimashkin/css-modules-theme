@@ -2,6 +2,6 @@ import getRollupConfig from '../../rollup.config';
 
 export default getRollupConfig({
   packageName: 'core',
-  umdName: 'css-modules-theme-core',
+  umdName: 'cssModulesThemeCore',
   input: 'src/index.js',
 });

@@ -3,13 +3,13 @@ import getRollupConfig from '../../rollup.config';
 
 export default getRollupConfig({
   packageName: 'react',
-  umdName: 'css-modules-theme-react',
+  umdName: 'cssModulesThemeReact',
   input: 'src/index.js',
   getExtraConfig: () => ({
     external: ['@css-modules-theme/core'],
     output: {
       globals: {
-        '@css-modules-theme/core': '@css-modules-theme/core'
+        '@css-modules-theme/core': 'cssModulesThemeCore'
       },
     },
   }),
