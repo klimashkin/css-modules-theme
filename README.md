@@ -54,7 +54,7 @@ How will a page that uses Button component modify its primary styling if it does
 
 The solution to avoid overwhelming a component with boolean props is to take two css-module objects and merge them together to get a final object. The first object can be called original theme, or ownTheme of the component, and the second one can be called injectTheme since we mix it into the first one. Both 'ownTheme' and 'injectTheme' can be synonymous to parent: injectTheme, child: ownTheme. 
 
-Several projects emerged in the past few years, one of which is react-css-themr. It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
+Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/javivelasco/react-css-themr). It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
 Why "unfortunately"? We can implement a forwardRef support with a HOC but using HOC leads to significant performance degradation. Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab with DevTools by noticing the first render of your page takes hundreds of milliseconds.
 
 But let's step back and think for a second. What does HOC do? It creates component instance for each wrapped instance of your component and merge your style object with theme object from a parent component instance. If we have 2000 identical components with different content, it will do it 2000 times. Hm, that doesn't sound right, because result theme object will be essentially the same for all of them. The nature of HOC multiplies isolated instances of your components by 2-3 times.
@@ -78,8 +78,8 @@ Project includes two (for now) scoped packages: [@css-modules-theme/core](https:
 * npm: `npm install @css-modules-theme/core`
 * yarn: `yarn add @css-modules-theme/core`
 * cdn: Exposed as `cssModulesThemeCore`
-  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/core@1.0.0/dist/core.umd.js"></script>`
-  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.0.0/dist/core.umd.js"></script>`
+  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
+  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
 
 1.5kb module (890bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
@@ -93,8 +93,8 @@ Function that returns a new theme as a result of composition of two given themes
 	   - `'merge'` Default way that assigns classnames from injectTheme to ownTheme, and concatenate classnames if exists in both
 	   - `'assign'` Also assign classnames from injectTheme to ownTheme, like Object.assign, so if classname exists in both, injectTheme takes precedence
 	   - `'replace'` Just use injectTheme
-   - [`ownPrefix`] *(String)* - Prefix to filter and strip out and properties in `ownTheme` that don't satisfy that prefix
-   - [`injectPrefix`] *(String)* - Prefix to filter and strip out and properties in `injectPrefix` that don't satisfy that prefix
+   - [`ownPrefix`] *(String)* - Prefix to filter and strip out properties in `ownTheme` that don't satisfy that prefix
+   - [`injectPrefix`] *(String)* - Prefix to filter and strip out properties in `injectPrefix` that don't satisfy that prefix
    - [`noCache = false`] *(Boolean)* - In case you generate pretty big `injectTheme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
 
 ### Examples
@@ -166,8 +166,8 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
 * npm: `npm install @css-modules-theme/react`
 * yarn: `yarn add @css-modules-theme/react`
 * cdn: Exposed as `cssModulesThemeReact`
-  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/react@1.0.0/dist/react.umd.js"></script>`
-  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.0.0/dist/react.umd.js"></script>`
+  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
+  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
 
 620bytes module that makes call of `getTheme` easier in React components, so you can just pass props to the following method and it will map theme specific props with getTheme arguments.
 
