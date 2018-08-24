@@ -75,11 +75,11 @@ Project includes two (for now) scoped packages: [@css-modules-theme/core](https:
 
 ## @css-modules-theme/core
 
-* npm: `npm install @css-modules-theme/core`
-* yarn: `yarn add @css-modules-theme/core`
+* [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
+* [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
 * cdn: Exposed as `cssModulesThemeCore`
-  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
-  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
 
 1.5kb module (890bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
@@ -163,11 +163,11 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
 
 ## @css-modules-theme/react
 
-* npm: `npm install @css-modules-theme/react`
-* yarn: `yarn add @css-modules-theme/react`
+* [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
+* [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
 * cdn: Exposed as `cssModulesThemeReact`
-  * Unpkg: `<script src="https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
-  * JSDelivr: `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
 
 620bytes module that makes call of `getTheme` easier in React components, so you can just pass props to the following method and it will map theme specific props with getTheme arguments.
 
