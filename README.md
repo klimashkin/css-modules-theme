@@ -10,10 +10,11 @@
 
 # Theme composition for CSS Modules  
   
-CSS Modules give you a very powerful way to write statically compiled, locally scoped and composable css selectors.  
-Local scope is the corner stone of CSS Modules, it finally solves clashes of css selectors by generating unique class names on compilation time. So it becomes a natural choice in the world of componentized front-end development, like in React.  
-But local scope brings a challenge: how to style children component from parent if they are isolated and their final selector names are unknown during development process?  
-Theming is the answer.  
+CSS Modules give you a very powerful way to write statically compiled, locally scoped and composable css selectors.
+Local scope is the corner stone of CSS Modules, it finally solves clashes of css selectors by generating unique class names on compilation time. Therefore, CSS Modules becomes a natural choice in the world of componentized front-end development, like in React.
+
+Local scope brings a challenge: how to style children component from parent if they are isolated and their final selector names are unknown during development process?
+Theming is the answer.
   
 Let's recap on what is CSS Module. On one side it’s just a standard css file, on JS side it’s an object that maps real (generated) class names from that file with names you give them during development.  
 For instance, imagine you have the following css code:  
