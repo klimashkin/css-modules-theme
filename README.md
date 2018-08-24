@@ -184,5 +184,50 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
    - [`ownPrefix`] *(String)* - Goes directly to `getTheme`
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
+### Examples
+Assume we have themeable Icon component. We can call `getThemeFromProps` many times during the lifecycle of the component, result will always be taken from cache as long as `props.theme*` are the same
+```javascript
+import {getThemeFromProps} from '@css-modules-theme/react';
+import styles from './Icon.css';
+
+class Icon extends Component {
+  handleClick() {
+     // We can call getThemeFromProps(styles, this.props) many times here, it will just return the same result from cache
+    const theme = getThemeFromProps(styles, this.props);
+    
+    console.log(theme.icon)
+  }
+  
+  render() {
+    const theme = getThemeFromProps(styles, this.props);
+    
+    return <div className={theme.icon} onClick={this.handleClick}>{this.props.icon}</div>;
+  }
+}
+```
+Or we can manually check for changing `theme` in props and compose in getDerivedStateFromProps
+```javascript
+import {getThemeFromProps} from '@css-modules-theme/react';
+import styles from './Icon.css';
+
+class Icon extends Component {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.theme !== prevState.injectTheme) {
+      return {injectTheme: nextProps.theme, theme: getThemeFromProps(styles, nextProps)};
+    }
+    
+    return null;
+  }
+  
+  handleClick() {
+    console.log(this.state.theme.icon)
+  }
+  
+  render() {
+    return <div className={this.state.theme.icon} onClick={this.handleClick}>{this.props.icon}</div>;
+  }
+}
+```
+
 # LICENCE
 [MIT](https://github.com/klimashkin/css-modules-theme/blob/master/LICENSE)
