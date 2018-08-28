@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0  (2018-08-23)
+## 1.2.0  (2018-08-27)
  * Update Babel to stable 7
  * React: add [`mixThemeWithProps`](https://github.com/klimashkin/css-modules-theme#mixthemewithprops) method
 

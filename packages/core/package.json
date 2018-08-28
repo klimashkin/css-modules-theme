@@ -1,6 +1,6 @@
 {
   "name": "@css-modules-theme/core",
-  "version": "1.2.0-rc.1",
+  "version": "1.2.0",
   "description": "Fast and cacheable theming composition for CSS Modules",
   "author": "Paul Klimashkin <paul.klimashkin@illumio.com>",
   "homepage": "https://github.com/klimashkin/css-modules-theme/tree/master/packages/core#readme",
