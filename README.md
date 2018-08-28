@@ -7,6 +7,7 @@
   * [getTheme](#getthemeowntheme-injecttheme-options)
 - [@css-modules-theme/react](#css-modules-themereact)
   * [getThemeFromProps](#getthemefrompropsowntheme-props-options)
+  * [mixThemeWithProps](#mixthemewithprops)
 
 # Theme composition for CSS Modules  
   
@@ -166,12 +167,15 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
 * cdn: Exposed as `cssModulesThemeReact`
-  * [Unpkg](https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
-  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.1.0/dist/react.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`
 
-620bytes module that makes call of `getTheme` easier in React components, so you can just pass props to the following method and it will map theme specific props with getTheme arguments.
 
 ### `getThemeFromProps(ownTheme, props, [options])`
+
+Helper module that makes call of `getTheme` easier in React components, so you can just pass props to this method and it will map theme specific props with getTheme arguments.
+
+*Parameters:*
 
  - `ownTheme` *(Object)* - First CSS modules object, used as a default (origin) theme for composition
  - `props` - Standard react props object with following properties:
@@ -185,32 +189,79 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
 ### Examples
-Assume we have themeable Icon component. We can call `getThemeFromProps` many times during the lifecycle of the component, result will always be taken from cache as long as `props.theme*` are the same
+Assume we have a themeable Icon component. Default composition for it is `'replace'`, but Button overrides it with `'merge'` one. Also, Button picks for Icon only classnames from its own style with prefix `icon-`. In result Button will render bigger green Icon.
+
+We can call `getThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
+```css
+/** iconStyles.css **/
+.icon { width: 20px; }
+.svg { color: red }
+.large { width: 30px; }
+.small { width: 15px; }
+
+/** buttonStyles.css **/
+.button { width: 100px; }
+.large { width: 200px; }
+.small { width: 50px; }
+.icon-svg { color: green; }
+.icon-large { width: 40px; }
+```
 ```javascript
 import {getThemeFromProps} from '@css-modules-theme/react';
-import styles from './Icon.css';
+import iconStyles from './Icon.css';
+import buttonStyles from './Button.css';
 
 class Icon extends Component {
   handleClick() {
-     // We can call getThemeFromProps(styles, this.props) many times here, it will just return the same result from cache
-    const theme = getThemeFromProps(styles, this.props);
+     // We can call getThemeFromProps(iconStyles, this.props) many times here, it will just return the same result from cache
+    const theme = getThemeFromProps(iconStyles, this.props);
     
     console.log(theme.icon)
   }
   
   render() {
-    const theme = getThemeFromProps(styles, this.props);
+    const theme = getThemeFromProps(iconStyles, this.props, {compose: 'replace'});
     
+    /* In case of call from Button final theme object would look like
+    theme = {
+      icon: "Icon_a",
+      svg: "Icon_b Button_x",
+      large: "Icon_c Button_z",
+      small: "Icon_d",
+    }
+    */
+    
+        
     return <div className={theme.icon} onClick={this.handleClick}>{this.props.icon}</div>;
   }
 }
+
+class Button extends Component {  
+  render() {    
+    return (
+      <button type="button">
+        <Icon theme={buttonStyles} themePrefix="icon-" themeCompose="merge"/>
+        {this.props.text}
+      </button>
+    );
+  }
+}
 ```
-Or we can manually check for changing `theme` in props and compose in getDerivedStateFromProps
+
+---
+If we want to use composed `theme` in many lifecycle hooks or, for instance, in methods that can be called dozens of times in short period of time, like in react-motion, we can manually check for changing `theme` props and compose final theme in `getDerivedStateFromProps`. To avoid even looking theme up in cache in hot functions.
 ```javascript
 import {getThemeFromProps} from '@css-modules-theme/react';
-import styles from './Icon.css';
+import styles from './styles.css';
 
-class Icon extends Component {
+export default class extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {motionConfig: {...}};
+    this.interpolateMotion = this.interpolateMotion.bind(this);
+  }
+  
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.theme !== prevState.injectTheme) {
       return {injectTheme: nextProps.theme, theme: getThemeFromProps(styles, nextProps)};
@@ -219,15 +270,59 @@ class Icon extends Component {
     return null;
   }
   
-  handleClick() {
-    console.log(this.state.theme.icon)
+  interpolateMotion(config) {
+    return (
+      <div className={this.state.theme.text} style={{width: `${config.width}px`, height: `${config.height}px`}}>
+        {this.props.content}
+      </div>
+    );
   }
-  
+
   render() {
-    return <div className={this.state.theme.icon} onClick={this.handleClick}>{this.props.icon}</div>;
+    return (
+      <Motion style={this.state.motionConfig}>
+        {this.interpolateMotion}
+      </Motion>
+    );
   }
 }
 ```
 
-# LICENCE
+### `mixThemeWithProps`
+
+What if your component just takes some properties from own `props` and pass all the rest down to another component as is. In that case you'd need to take all `theme*` props out, something like that:
+```javascript
+render() {
+  let {size, onClick, theme, themePrefix, themeCompose, themeNoCache, ...elementProps} = this.props;
+  
+  theme = getThemeFromProps(styles, this.props);
+  elementProps.className = theme.main;
+  
+  ...
+  
+  return (
+    <div {...elementProps}>
+      ...
+    </div>
+  );
+}
+```
+So you need to list all possible `theme*` props that parent can specify for `getThemeFromProps`, to destructure them out because they are not valid for a child component. But what if `@css-modules-theme/react` will add more props in the future? It's pretty annoying to manually list them all.
+
+For that case `mixThemeWithProps` has been created. It's a simple wrapper on top of `getThemeFromProps` (and has exactly the same signature) that takes out all `theme*` props for you and mix composed `theme` in the result props object. So you can destructure only props you really need.
+```javascript
+render() {
+  const {size, onClick, theme, ...elementProps} = mixThemeWithProps(styles, this.props);
+  
+  ...
+  
+  return (
+    <div className={theme.main}>
+      ...
+    </div>
+  );
+}
+```
+
+## LICENCE
 [MIT](https://github.com/klimashkin/css-modules-theme/blob/master/LICENSE)

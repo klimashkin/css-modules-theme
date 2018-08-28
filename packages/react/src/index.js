@@ -36,3 +36,22 @@ export const getThemeFromProps = (ownTheme, props, options = {}) => getTheme(
     noCache: typeof props.themeNoCache === 'boolean' ? props.themeNoCache : options.noCache,
   },
 );
+
+/**
+ * Helper on top of getThemeFromProps,
+ * that returns new props object with deprived theme* properties from original one and mixed result `theme`
+ *
+ * See {@link getThemeFromProps} for parameters list
+ *
+ * @example
+ * import {mixThemeWithProps} from 'css-modules-theme-react';
+ *
+ * const {theme, onClick, ...restProps} = mixThemeWithProps(styles, this.props);
+ */
+export const mixThemeWithProps = (ownTheme, props, options) => {
+  const {theme, themePrefix, themeCompose, themeNoCache, ...restProps} = props;
+
+  restProps.theme = getThemeFromProps(ownTheme, props, options);
+
+  return restProps;
+};
