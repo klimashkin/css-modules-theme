@@ -8,6 +8,7 @@
 - [@css-modules-theme/react](#css-modules-themereact)
   * [getThemeFromProps](#getthemefrompropsowntheme-props-options)
   * [mixThemeWithProps](#mixthemewithprops)
+- [Bundling](#bundling)
 
 # Theme composition for CSS Modules  
   
@@ -323,6 +324,46 @@ render() {
   );
 }
 ```
+
+## Bundling
+
+Modules under @css-modules-theme namespace are built with [rollup](https://github.com/rollup/rollup) and distributed through package managers ([npm](https://www.npmjs.com/settings/css-modules-theme/packages), [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react), cdn's) with `dist/` folder that contains several bundles for different targets:
+* dist/[*name*].umd.js - Universal minified module, transpiled down to ES5 code, and can be fetched and used by any browser or nodejs as is, available on cdns 
+* dist/[*name*].cjs.js - classic CommonJS bundle transpiled down to ES5 code
+* dist/[*name*].es.js - ES6-module bundle transpiled down to ES5 code
+* dist/[*name*].es2015.js - ES6-module bundle transpiled down to ES6 (2015) code, where, for instance, object rest/spread is transpiled to Object.assign
+* dist/[*name*].es2018.js - ES6-module bundle transpiled down to ES9 (2018) code, which basicall means no transpilation at the moment
+
+Each of them has corresponding field in `package.json`:
+```json
+  "browser": "dist/name.umd.js",
+  "main": "dist/name.cjs.js",
+  "module": "dist/name.es.js",
+  "es2015": "dist/name.es2015.js",
+  "es2018": "dist/name.es2018.js",
+```
+
+If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`.
+
+But if you, more likely, use bundlers to build your applications, like [webpack](https://github.com/webpack/webpack), then better choice would be to require corresponding module for a target that you need. If you compile your app bundle down to ES5, then webpack config can look like that
+```javascript
+...
+resolve: {
+  mainFields: ['module', 'browser', 'main'],
+  ...
+}
+```
+so webpack will search for existence of ES module first for better bundling.
+
+If you compile for modern browsers that [support](http://kangax.github.io/compat-table/es2016plus/) ES2015+ you can specify:
+```javascript
+mainFields: ['es2015', 'module', 'browser', 'main'],
+````
+or if latest browsers:
+```javascript
+mainFields: ['es2018', 'es2017', 'es2016', 'es2015', 'module', 'browser', 'main'],
+````
+You get the idea. You can compile your application into several bundles with different compilation levels and have different webpack configs for them with different set of `mainFields`, to give to the modern browsers almost pure non compiled code, that takes less space and have fewer transformations, which leads to better performance.
 
 ## LICENCE
 [MIT](https://github.com/klimashkin/css-modules-theme/blob/master/LICENSE)
