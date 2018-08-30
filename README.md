@@ -25,10 +25,10 @@ For instance, imagine you have the following css code:
   display: inline-block;
 }  
 .primary {  
-  background-clor: green;  
+  background-color: green;  
 }  
 .secondary {  
-  background-clor: red;  
+  background-color: red;  
 }  
 ```  
 From the above css definition, depending on css-loader setting (when using a module bundler like 'webpack'), we might get generated css like this: 
@@ -37,10 +37,10 @@ From the above css definition, depending on css-loader setting (when using a mod
   display: inline-block;
 }  
 .ab {  
-  background-clor: green;  
+  background-color: green;  
 }  
 .ac {  
-  background-clor: red;  
+  background-color: red;  
 }  
 ```
 And in JavaSctipt you get the following object:  
@@ -52,7 +52,7 @@ And in JavaSctipt you get the following object:
 }
 ```
 
-How will a page that uses Button component modify its primary styling if it doesn't know aa classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's prop definitions can grow exponentially making prop management difficult.
+How will a page that uses Button component modify its `primary` styling if it doesn't know `aa` classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's prop definitions can grow exponentially making prop management difficult.
 
 The solution to avoid overwhelming a component with boolean props is to take two css-module objects and merge them together to get a final object. The first object can be called original theme, or ownTheme of the component, and the second one can be called injectTheme since we mix it into the first one. Both 'ownTheme' and 'injectTheme' can be synonymous to parent: injectTheme, child: ownTheme. 
 
