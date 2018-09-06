@@ -6,8 +6,11 @@
 // TypeScript Version: 2.8
 
 
+// helpers
+type Writeable<T> = { -readonly [P in keyof T]-?: T[P] };
+
 /**
- * @example interface IProps extends IThemeProps<typeof styles>
+ * @example interface Props extends IThemeProps<typeof styles>
  */
 export interface ThemeProps<T = {}> {
     theme?: Theme<T>;
@@ -36,7 +39,7 @@ export type Theme<T = {}> = Partial<T> & {
  *
  * @return theme
  */
-export function getThemeFromProps<T>(ownTheme: Theme<T>, props: ThemeProps, options?: ThemeOptions): Theme<T>;
+export function getThemeFromProps<T>(ownTheme: Theme<T>, props: ThemeProps, options?: ThemeOptions): Theme<Writeable<T>>;
 
 /**
  * @param ownTheme             First CSS modules object, used as a default (origin) theme for composition
@@ -46,4 +49,4 @@ export function getThemeFromProps<T>(ownTheme: Theme<T>, props: ThemeProps, opti
  * @return props & boxed theme
  */
 export function mixThemeWithProps<T, U extends ThemeProps>(ownTheme: Theme<T>, props: U, options?: ThemeOptions):
-    { theme: Theme<T> } & Pick<U, Exclude<keyof U, keyof ThemeProps>>
+    { theme: Theme<Writeable<T>> } & Pick<U, Exclude<keyof U, keyof ThemeProps>>
