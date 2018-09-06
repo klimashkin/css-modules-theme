@@ -155,14 +155,6 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
   'small': 'e',
 }
 ```
-```javascript
-getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
-{
-  'icon': 'd',
-  'small': 'e',
-}
-```
-
 ## @css-modules-theme/react
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
@@ -190,8 +182,8 @@ Helper module that makes call of `getTheme` easier in React components, so you c
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
 ### Examples
-Assume we have a themeable Icon component. Default composition for it is `'replace'`, but Button overrides it with `'merge'` one. Also, Button picks for Icon only classnames from its own style with prefix `icon-`. In result Button will render bigger green Icon.
-
+Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method in Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use the prefix `icon-` in own CSS declaration: buttonStyles.css to concatenate the matching Icon classnames in iconStyles.css.
+As a result using `merge`, Button will render the bigger green Icon during the merge declaration by adding own classname to Icon's large selector definition.(e.g {large: "Icon_c Button_z"})
 We can call `getThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
 ```css
 /** iconStyles.css **/
@@ -250,7 +242,9 @@ class Button extends Component {
 ```
 
 ---
-If we want to use composed `theme` in many lifecycle hooks or, for instance, in methods that can be called dozens of times in short period of time, like in react-motion, we can manually check for changing `theme` props and compose final theme in `getDerivedStateFromProps`. To avoid even looking theme up in cache in hot functions.
+If we want to use composed `theme` in many lifecycle hooks or, for instance, in methods that can be called dozens of times quickly,
+like in react-motion, we can manually check for changing theme props and compose a state `theme` in `getDerivedStateFromProps`.
+By having a state theme, searching the cache in hot functions can be avoided.
 ```javascript
 import {getThemeFromProps} from '@css-modules-theme/react';
 import styles from './styles.css';
@@ -291,7 +285,7 @@ export default class extends Component {
 
 ### `mixThemeWithProps`
 
-What if your component just takes some properties from own `props` and pass all the rest down to another component as is. In that case you'd need to take all `theme*` props out, something like that:
+What if your component just takes some properties from own `props` and pass all the rest down to another component as is. In that case you'd need to take all `theme*` props out, something like this:
 ```javascript
 render() {
   let {size, onClick, theme, themePrefix, themeCompose, themeNoCache, ...elementProps} = this.props;
