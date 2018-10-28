@@ -1,104 +1,117 @@
 import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
 
+const composedThemesCacheMap = new WeakMap();
+const prefixedThemesCacheMap = new WeakMap();
+
 export const COMPOSE_MERGE = 'merge';
 export const COMPOSE_ASSIGN = 'assign';
 export const COMPOSE_REPLACE = 'replace';
 
-const getOwnPrefixedTheme = (() => {
-  const ownPrefixedThemesMap = new WeakMap();
+export const getCachedPrefixedTheme = (theme, prefix) => {
+  let ownPrefixedItems = prefixedThemesCacheMap.get(theme);
+  let ownPrefixeditem;
 
-  return (theme, prefix) => {
-    let ownPrefixedItems = ownPrefixedThemesMap.get(theme);
-    let ownPrefixeditem;
-
-    if (ownPrefixedItems) {
-      ownPrefixeditem = ownPrefixedItems.find(item => item.theme === theme && item.prefix === prefix);
-    } else {
-      ownPrefixedItems = [];
-      ownPrefixedThemesMap.set(theme, ownPrefixedItems);
-    }
-
-    if (ownPrefixeditem === undefined) {
-      ownPrefixeditem = {theme, prefix, finalTheme: filterThemeWithPrefix(theme, prefix)};
-      ownPrefixedItems.push(ownPrefixeditem);
-    }
-
-    return ownPrefixeditem.finalTheme;
-  };
-})();
-
-const composeThemes = (ownTheme, injectTheme, injectPrefix, compose) => {
-  const checkPrefix = typeof injectPrefix === 'string' && injectPrefix.length > 0;
-  const passedTheme = checkPrefix ? filterThemeWithPrefix(injectTheme, injectPrefix) : injectTheme;
-
-  if (compose === COMPOSE_MERGE) {
-    // Don't need to clone one more time if keys have been filtered
-    const result = checkPrefix ? passedTheme : {...passedTheme};
-
-    for (const key in ownTheme) {
-      if (ownTheme.hasOwnProperty(key)) {
-        const passedThemeValue = passedTheme[key];
-
-        if (passedThemeValue === undefined) {
-          result[key] = ownTheme[key];
-        } else {
-          result[key] = ownTheme[key] + ' ' + passedThemeValue;
-        }
-      }
-    }
-
-    return result;
+  if (ownPrefixedItems) {
+    ownPrefixeditem = ownPrefixedItems.find(item => item.theme === theme && item.prefix === prefix);
+  } else {
+    ownPrefixedItems = [];
+    prefixedThemesCacheMap.set(theme, ownPrefixedItems);
   }
 
-  if (compose === COMPOSE_REPLACE) {
-    return passedTheme;
+  if (ownPrefixeditem === undefined) {
+    ownPrefixeditem = {theme, prefix, finalTheme: filterThemeWithPrefix(theme, prefix)};
+    ownPrefixedItems.push(ownPrefixeditem);
   }
 
-  if (compose === COMPOSE_ASSIGN) {
-    return {...ownTheme, ...passedTheme};
-  }
-
-  return ownTheme;
+  return ownPrefixeditem.finalTheme;
 };
 
-const getCachedComposedTheme = (() => {
-  const composedThemesMap = new WeakMap();
+export const composeTheme = themes => {
+  const first = themes[0];
+  let cacheCheck = !first.noCache;
+  let composeMethod = first.compose || COMPOSE_MERGE;
+  let resultTheme;
 
-  return (ownTheme, injectTheme, prefix, compose) => {
-    let composedThemes = composedThemesMap.get(injectTheme);
+  if (first.prefix) {
+    resultTheme = getCachedPrefixedTheme(first.theme, first.prefix);
+  } else {
+    resultTheme = first.theme;
+  }
 
-    if (composedThemes !== undefined) {
-      const composedItem = composedThemes.find(
-        item => item.ownTheme === ownTheme && item.prefix === prefix && item.compose === compose
-      );
+  for (let i = 1; i < themes.length; i++) {
+    let {theme, prefix, compose, noCache = false} = themes[i];
+    const withPrefix = typeof prefix === 'string' && prefix.length > 0;
+    let composedTheme;
 
-      if (composedItem !== undefined) {
-        return composedItem.composedTheme;
-      }
-    } else {
-      composedThemes = [];
-      composedThemesMap.set(injectTheme, composedThemes);
+    if (compose) {
+      composeMethod = compose;
     }
 
-    const composedItem = {
-      ownTheme, prefix, compose, count: 1,
-      composedTheme: composeThemes(ownTheme, injectTheme, prefix, compose),
-    };
+    if (noCache && cacheCheck) {
+      cacheCheck = false;
+    }
 
-    composedThemes.push(composedItem);
+    let composedCachedItem;
 
-    return composedItem.composedTheme;
-  };
-})();
+    if (cacheCheck && composeMethod !== COMPOSE_REPLACE) {
+      let composedThemesCache = composedThemesCacheMap.get(theme);
 
-export const getTheme = (ownTheme, injectTheme, {ownPrefix, injectPrefix, compose = COMPOSE_MERGE, noCache = false} = {}) => {
-  if (typeof ownPrefix === 'string' && ownPrefix.length > 0) {
-    ownTheme = getOwnPrefixedTheme(ownTheme, ownPrefix);
+      if (composedThemesCache === undefined) {
+        composedThemesCache = [];
+        composedThemesCacheMap.set(theme, composedThemesCache);
+      } else {
+        composedCachedItem = composedThemesCache.find(
+          item => item.againstTheme === resultTheme && item.prefix === prefix && item.composeMethod === composeMethod
+        );
+
+        if (composedCachedItem !== undefined) {
+          resultTheme = composedCachedItem.composedTheme;
+          continue;
+        }
+      }
+
+      composedCachedItem = {
+        againstTheme: resultTheme, prefix, composeMethod: composeMethod,
+      };
+
+      composedThemesCache.push(composedCachedItem);
+    }
+
+    if (withPrefix) {
+      composedTheme = (noCache ? filterThemeWithPrefix : getCachedPrefixedTheme)(theme, prefix);
+    } else {
+      composedTheme = theme;
+    }
+
+    if (composeMethod === COMPOSE_REPLACE) {
+      resultTheme = composedTheme;
+      continue;
+    }
+
+    composedTheme = {...composedTheme};
+
+    if (composeMethod === COMPOSE_MERGE) {
+      for (const key in resultTheme) {
+        if (resultTheme.hasOwnProperty(key)) {
+          const composedThemeValue = composedTheme[key];
+
+          if (composedThemeValue === undefined) {
+            composedTheme[key] = resultTheme[key];
+          } else {
+            composedTheme[key] = `${resultTheme[key]} ${composedThemeValue}` ;
+          }
+        }
+      }
+    } else if (composeMethod === COMPOSE_ASSIGN) {
+      Object.assign(composedTheme, resultTheme);
+    }
+
+    if (composedCachedItem !== undefined) {
+      composedCachedItem.composedTheme = composedTheme;
+    }
+
+    resultTheme = composedTheme;
   }
 
-  if (!injectTheme) {
-    return ownTheme;
-  }
-
-  return (noCache ? composeThemes : getCachedComposedTheme)(ownTheme, injectTheme, injectPrefix, compose);
+  return resultTheme;
 };
