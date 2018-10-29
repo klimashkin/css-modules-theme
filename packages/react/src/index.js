@@ -1,4 +1,4 @@
-import {composeTheme} from '@css-modules-theme/core';
+import {composeTheme, COMPOSE_MERGE, COMPOSE_ASSIGN, COMPOSE_REPLACE} from '@css-modules-theme/core';
 
 /**
  * Takes theme styles object and returns a composed one, properties of which optionally start with given prefix
@@ -80,3 +80,7 @@ export const mixThemeWithProps = (ownTheme, propsOrContext, options = {}) => {
 
   return restProps;
 };
+
+// Reexport core constants
+export {COMPOSE_MERGE, COMPOSE_ASSIGN, COMPOSE_REPLACE};
+
