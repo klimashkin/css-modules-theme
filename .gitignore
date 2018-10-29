@@ -17,6 +17,9 @@ lerna-debug.log
 # dist folder, users can get build files on unpkg
 dist/
 
+# Jest coverage
+/coverage/
+
 # Optional npm cache directory
 .npm
 

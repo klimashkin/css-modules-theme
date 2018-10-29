@@ -29,6 +29,9 @@
     "@babel/plugin-syntax-object-rest-spread": "~7.0.0",
     "@babel/plugin-transform-react-jsx": "~7.0.0",
     "@babel/preset-env": "~7.1.0",
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "jest-circus": "23.6.0",
     "lerna": "~3.4.3",
     "lodash": "~4.17.11",
     "rollup": "~0.66.6",
@@ -38,9 +41,10 @@
   },
   "dependencies": {},
   "scripts": {
-    "prepublish": "npm run clean && npm run build",
+    "prepublish": "npm run test && npm run clean && npm run build",
     "build": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
-    "clean": "lerna exec -- rimraf dist"
+    "clean": "lerna exec -- rimraf dist",
+    "test": "jest"
   },
   "engines": {
     "node": ">=8.10.0",
