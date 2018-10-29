@@ -88,9 +88,9 @@ export const composeTheme = themes => {
       continue;
     }
 
-    composedTheme = {...composedTheme};
-
     if (composeMethod === COMPOSE_MERGE) {
+      composedTheme = {...composedTheme};
+
       for (const key in resultTheme) {
         if (resultTheme.hasOwnProperty(key)) {
           const composedThemeValue = composedTheme[key];
@@ -103,7 +103,7 @@ export const composeTheme = themes => {
         }
       }
     } else if (composeMethod === COMPOSE_ASSIGN) {
-      Object.assign(composedTheme, resultTheme);
+      composedTheme = {...resultTheme, ...composedTheme};
     }
 
     if (composedCachedItem !== undefined) {
