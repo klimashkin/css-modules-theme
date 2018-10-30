@@ -1,8 +1,10 @@
 /**
- * Takes theme styles object and returns the new one, properties of which start with given prefix
+ * Takes theme object and returns the new one, properties of which start with the given prefix
  *
- * @param {Object} theme - Styles object
- * @param {string} prefix - Properties prefix
+ * @param {Object} [theme] - Theme object
+ * @param {string} [prefix] - Prefix to filter out theme properties that don't start with it
+ *
+ * @returns {Object}
  *
  * @example
  * filterThemeWithPrefix({a: 'Comp_a', b: 'Comp_b', item-x: 'Comp_item-x', item-y: 'Comp_item-y'}, 'item-');

@@ -7,6 +7,10 @@ export const COMPOSE_MERGE = 'merge';
 export const COMPOSE_ASSIGN = 'assign';
 export const COMPOSE_REPLACE = 'replace';
 
+/**
+ * Filter theme object with a given prefix and cache the result which will be used on subsequent calls with the same params
+ * See {@link filterThemeWithPrefix} for parameters list
+ */
 export const getCachedPrefixedTheme = (theme, prefix) => {
   let ownPrefixedItems = prefixedThemesCacheMap.get(theme);
   let ownPrefixeditem;
@@ -26,6 +30,17 @@ export const getCachedPrefixedTheme = (theme, prefix) => {
   return ownPrefixeditem.finalTheme;
 };
 
+/**
+ * Takes an array of objects, which contain themes and options, and returns a composed theme
+ *
+ * @param {Object[]} themes - React props object that will be searched for the following properties
+ * @param {Object} [themes[].theme] - Theme object to compose
+ * @param {string} [themes[].compose] - Method of composition of current theme with previous one
+ * @param {string} [themes[].prefix] - Prefix to filter out properties in current theme before composition
+ * @param {boolean} [themes[].noCache=false] - Whether composed theme should not be cached for specified params.
+ *
+ * @returns {Object}
+ */
 export const composeTheme = themes => {
   const first = themes[0];
   let cacheCheck = !first.noCache;
