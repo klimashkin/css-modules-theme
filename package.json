@@ -23,28 +23,37 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@babel/core": "~7.1.2",
+    "@babel/core": "~7.1.5",
     "@babel/plugin-proposal-class-properties": "~7.1.0",
     "@babel/plugin-proposal-object-rest-spread": "~7.0.0",
     "@babel/plugin-syntax-object-rest-spread": "~7.0.0",
-    "@babel/plugin-transform-react-jsx": "~7.0.0",
-    "@babel/preset-env": "~7.1.0",
-    "babel-jest": "23.6.0",
-    "jest": "23.6.0",
-    "jest-circus": "23.6.0",
+    "@babel/plugin-transform-react-jsx": "~7.1.6",
+    "@babel/preset-env": "~7.1.5",
+    "@babel/preset-typescript": "7.1.0",
+    "@types/jest": "~23.3.9",
+    "@types/node": "~10.12.7",
+    "babel-core": "~7.0.0-bridge.0",
+    "babel-jest": "~23.6.0",
+    "jest": "~23.6.0",
+    "jest-circus": "~23.6.0",
     "lerna": "~3.4.3",
     "lodash": "~4.17.11",
-    "rollup": "~0.66.6",
+    "rollup": "~0.67.1",
     "rollup-plugin-babel": "~4.0.3",
     "rollup-plugin-node-resolve": "~3.4.0",
-    "rollup-plugin-terser": "~3.0.0"
+    "rollup-plugin-terser": "~3.0.0",
+    "typescript": "~3.1.6",
+    "utility-types": "^2.1.0"
   },
   "dependencies": {},
   "scripts": {
-    "prepublish": "npm run test && npm run clean && npm run build",
-    "build": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
+    "test": "jest",
+    "types": "tsc --build --verbose",
+    "types-watch": "tsc --build --watch",
+    "bootstrap": "lerna bootstrap",
     "clean": "lerna exec -- rimraf dist",
-    "test": "jest"
+    "rollup": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
+    "prepublishOnly": "npm run clean && npm run types && npm run rollup && npm run test"
   },
   "engines": {
     "node": ">=8.10.0",

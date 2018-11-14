@@ -4,7 +4,21 @@ module.exports = {
   browser: false,
   projects: ['<rootDir>/packages'],
   testRunner: 'jest-circus/runner',
-  transform: {'^.+\\.jsx?$': '<rootDir>/jest.transform.js'},
+  testMatch: [
+    '<rootDir>/packages/**/?(*.)(spec|test).ts?(x)',
+  ],
+  collectCoverageFrom: [
+    '<rootDir>/packages/*/src/**/*.{ts,tsx}',
+  ],
+  moduleFileExtensions: [
+    'ts',
+    'tsx',
+    'js',
+    'jsx',
+  ],
+  transform: {
+    '^.+\\.[tj]sx?$': '<rootDir>/jest.transform.js',
+  },
   transformIgnorePatterns: [
     "<rootDir>/packages/.*(node_modules)(?!.*css-modules-theme.*).*$",
   ],

@@ -1,14 +1,15 @@
-import {composeTheme, COMPOSE_MERGE, COMPOSE_ASSIGN, COMPOSE_REPLACE} from './index';
+import {Compose, composeTheme} from './index';
+import * as types from './types';
 
 describe('Single theme', () => {
-  const themeIcon = {
+  const themeIcon: types.Theme = {
     icon: 'Icon_icon',
     svg: 'Icon_svg',
     small: 'Icon_small',
     medium: 'Icon_medium',
     large: 'Icon_large',
   };
-  const themeButton = {
+  const themeButton: types.Theme = {
     button: 'Button_button',
     primary: 'Button_primary Button_button',
     secondary: 'Button_secondary Button_button',
@@ -23,9 +24,9 @@ describe('Single theme', () => {
   it.each([
     {theme: themeIcon},
     {theme: themeIcon, noCache: true},
-    {theme: themeIcon, compose: COMPOSE_MERGE},
-    {theme: themeIcon, compose: COMPOSE_ASSIGN},
-    {theme: themeIcon, compose: COMPOSE_REPLACE},
+    {theme: themeIcon, compose: Compose.Merge},
+    {theme: themeIcon, compose: Compose.Assign},
+    {theme: themeIcon, compose: Compose.Replace},
   ])(
     'should return passed theme as is from %p',
     (params) => {
@@ -56,14 +57,14 @@ describe('Single theme', () => {
 
 
 describe('Two themes', () => {
-  const themeIcon = {
+  const themeIcon: types.Theme = {
     icon: 'Icon_icon',
     svg: 'Icon_svg',
     small: 'Icon_small',
     medium: 'Icon_medium',
     large: 'Icon_large',
   };
-  const themeButton = {
+  const themeButton: types.Theme = {
     button: 'Button_button',
     primary: 'Button_primary Button_button',
     secondary: 'Button_secondary Button_button',
@@ -77,16 +78,16 @@ describe('Two themes', () => {
 
   it.each([
     [{theme: {...themeIcon}}, {theme: {...themeButton}}],
-    [{theme: {...themeIcon}, compose: COMPOSE_MERGE}, {theme: {...themeButton}}],
-    [{theme: {...themeIcon}, compose: COMPOSE_MERGE}, {theme: {...themeButton}, compose: COMPOSE_MERGE}],
-    [{theme: {...themeIcon}, compose: COMPOSE_ASSIGN}, {theme: {...themeButton}, compose: COMPOSE_MERGE}],
-    [{theme: {...themeIcon}, compose: COMPOSE_REPLACE}, {theme: {...themeButton}, compose: COMPOSE_MERGE}],
-    [{theme: {...themeIcon}}, {theme: {...themeButton}, compose: COMPOSE_MERGE}],
+    [{theme: {...themeIcon}, compose: Compose.Merge}, {theme: {...themeButton}}],
+    [{theme: {...themeIcon}, compose: Compose.Merge}, {theme: {...themeButton}, compose: Compose.Merge}],
+    [{theme: {...themeIcon}, compose: Compose.Assign}, {theme: {...themeButton}, compose: Compose.Merge}],
+    [{theme: {...themeIcon}, compose: Compose.Replace}, {theme: {...themeButton}, compose: Compose.Merge}],
+    [{theme: {...themeIcon}}, {theme: {...themeButton}, compose: Compose.Merge}],
   ])(
     'should compose by merge [%p, %p]',
     (a, b) => {
-      let theme;
-      const expectedResult = {
+      let theme: types.Theme;
+      const expectedResult: types.Theme = {
         icon: 'Icon_icon Button_icon',
         svg: 'Icon_svg',
         small: 'Icon_small',
@@ -123,8 +124,8 @@ describe('Two themes', () => {
   );
 
   it('should filter and compose by merge', () => {
-    let theme;
-    const expectedResult = {
+    let theme: types.Theme;
+    const expectedResult: types.Theme = {
       icon: 'Icon_icon Button_firstIcon-icon',
       svg: 'Icon_svg Button_firstIcon-svg',
       small: 'Icon_small',
@@ -153,16 +154,16 @@ describe('Two themes', () => {
 
 
   it.each([
-    [{theme: {...themeIcon}, compose: COMPOSE_ASSIGN}, {theme: {...themeButton}}],
-    [{theme: {...themeIcon}, compose: COMPOSE_ASSIGN}, {theme: {...themeButton}, compose: COMPOSE_ASSIGN}],
-    [{theme: {...themeIcon}, compose: COMPOSE_MERGE}, {theme: {...themeButton}, compose: COMPOSE_ASSIGN}],
-    [{theme: {...themeIcon}, compose: COMPOSE_REPLACE}, {theme: {...themeButton}, compose: COMPOSE_ASSIGN}],
-    [{theme: {...themeIcon}}, {theme: {...themeButton}, compose: COMPOSE_ASSIGN}],
+    [{theme: {...themeIcon}, compose: Compose.Assign}, {theme: {...themeButton}}],
+    [{theme: {...themeIcon}, compose: Compose.Assign}, {theme: {...themeButton}, compose: Compose.Assign}],
+    [{theme: {...themeIcon}, compose: Compose.Merge}, {theme: {...themeButton}, compose: Compose.Assign}],
+    [{theme: {...themeIcon}, compose: Compose.Replace}, {theme: {...themeButton}, compose: Compose.Assign}],
+    [{theme: {...themeIcon}}, {theme: {...themeButton}, compose: Compose.Assign}],
   ])(
     'should compose by assign [%p, %p]',
     (a, b) => {
-      let theme;
-      const expectedResult = {
+      let theme: types.Theme;
+      const expectedResult: types.Theme = {
         icon: 'Button_icon',
         svg: 'Icon_svg',
         small: 'Icon_small',
@@ -199,8 +200,8 @@ describe('Two themes', () => {
   );
 
   it('should filter and compose by assign', () => {
-    let theme;
-    const expectedResult = {
+    let theme: types.Theme;
+    const expectedResult: types.Theme = {
       icon: 'Button_firstIcon-icon',
       svg: 'Button_firstIcon-svg',
       small: 'Icon_small',
@@ -210,41 +211,41 @@ describe('Two themes', () => {
 
     // First and second call should return the same object, because default noCache is false
     {
-      theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN}]);
+      theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign}]);
       expect(theme).toStrictEqual(expectedResult);
-      expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN}])).toBe(theme);
+      expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign}])).toBe(theme);
     }
 
     // But second call with noCache should return a new object
     {
       theme = composeTheme([
-        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN},
+        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign},
       ]);
       expect(theme).toStrictEqual(expectedResult);
       expect(composeTheme([
-        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN},
+        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign},
       ])).not.toBe(theme);
 
       theme = composeTheme([
-        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN, noCache: true},
+        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign, noCache: true},
       ]);
       expect(theme).toStrictEqual(expectedResult);
       expect(composeTheme([
-        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_ASSIGN, noCache: true},
+        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Assign, noCache: true},
       ])).not.toBe(theme);
     }
   });
 
 
   it.each([
-    [{theme: {...themeIcon}, compose: COMPOSE_REPLACE}, {theme: themeButton}],
-    [{theme: {...themeIcon}, compose: COMPOSE_REPLACE}, {theme: themeButton, compose: COMPOSE_REPLACE}],
-    [{theme: {...themeIcon}, compose: COMPOSE_MERGE}, {theme: themeButton, compose: COMPOSE_REPLACE}],
-    [{theme: {...themeIcon}, compose: COMPOSE_ASSIGN}, {theme: themeButton, compose: COMPOSE_REPLACE}],
-    [{theme: {...themeIcon}}, {theme: themeButton, compose: COMPOSE_REPLACE}],
+    [{theme: {...themeIcon}, compose: Compose.Replace}, {theme: themeButton}],
+    [{theme: {...themeIcon}, compose: Compose.Replace}, {theme: themeButton, compose: Compose.Replace}],
+    [{theme: {...themeIcon}, compose: Compose.Merge}, {theme: themeButton, compose: Compose.Replace}],
+    [{theme: {...themeIcon}, compose: Compose.Assign}, {theme: themeButton, compose: Compose.Replace}],
+    [{theme: {...themeIcon}}, {theme: themeButton, compose: Compose.Replace}],
   ])(
     'should compose by replace [%p, %p]',
-    (...args) => {
+    (...args: types.ThemeOptions[]) => {
       expect(composeTheme(args)).toBe(themeButton);
     },
   );
@@ -258,27 +259,27 @@ describe('Two themes', () => {
 
     // First and second call should return the same object, because default noCache is false
     {
-      theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE}]);
+      theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace}]);
       expect(theme).toStrictEqual(expectedResult);
-      expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE}])).toBe(theme);
+      expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace}])).toBe(theme);
     }
 
     // But second call with noCache should return a new object only if noCache is set on second theme
     {
       theme = composeTheme([
-        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE},
+        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace},
       ]);
       expect(theme).toStrictEqual(expectedResult);
       expect(composeTheme([
-        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE},
+        {theme: themeIcon, noCache: true}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace},
       ])).toBe(theme);
 
       theme = composeTheme([
-        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE, noCache: true},
+        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace, noCache: true},
       ]);
       expect(theme).toStrictEqual(expectedResult);
       expect(composeTheme([
-        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: COMPOSE_REPLACE, noCache: true},
+        {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace, noCache: true},
       ])).not.toBe(theme);
     }
   });

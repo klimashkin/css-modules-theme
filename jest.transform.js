@@ -6,6 +6,7 @@ module.exports = require('babel-jest').createTransformer({
       targets: {
         node: true,
       }
-    }]
+    }],
+    ['@babel/preset-typescript', {isTSX: false}],
   ],
 });

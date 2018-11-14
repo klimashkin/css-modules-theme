@@ -9,13 +9,17 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
     result = {
       presets: [
         ['@babel/preset-env', {loose: true, modules: false}],
+        ['@babel/preset-typescript', {isTSX: false}],
         ...getExtraPresets(specs.ES5),
       ],
       plugins: getExtraPlugins(specs.ES5),
     };
   } else if (spec === specs.ES2015) {
     result = {
-      presets: getExtraPresets(specs.ES2015),
+      presets: [
+        ['@babel/preset-typescript', {isTSX: false}],
+        ...getExtraPresets(specs.ES2015),
+      ],
       plugins: [
         ['@babel/plugin-proposal-object-rest-spread', {loose: true, useBuiltIns: true}],
         ...getExtraPlugins(specs.ES2015),
@@ -23,7 +27,10 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
     };
   } if (spec === specs.ES2018) {
     result = {
-      presets: getExtraPresets(specs.ES2018),
+      presets: [
+        ['@babel/preset-typescript', {isTSX: false}],
+        ...getExtraPresets(specs.ES2015),
+      ],
       plugins: [
         // To make babel undersdand object-rest-spread syntax without transforming it
         '@babel/plugin-syntax-object-rest-spread',

@@ -10,6 +10,7 @@
   "module": "dist/core.es.js",
   "es2015": "dist/core.es2015.js",
   "es2018": "dist/core.es2018.js",
+  "typings": "dist/index.d.ts",
   "directories": {
     "dist": "dist",
     "src": "src"

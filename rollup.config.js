@@ -17,12 +17,15 @@ const targets = {
   },
   module: {
     format: 'es', specs: [
-      {spec: specs.ES5, ext: 'es'}, {spec: specs.ES2015, ext: specs.ES2015}, {spec: specs.ES2018, ext: specs.ES2018},
+      {spec: specs.ES5, ext: 'es'},
+      {spec: specs.ES2015, ext: specs.ES2015},
+      {spec: specs.ES2018, ext: specs.ES2018},
     ],
   },
 };
 
 export default function({packageName, umdName, input, getExtraConfig = () => {}, getExtraPresets, getExtraPlugins}) {
+  console.log(input);
   return Object.entries(targets).reduce((config, [target, {format, specs}]) =>
     config.concat(specs.reduce((config, {spec, ext = format, compress = false}) => {
       config.push(_.merge(
@@ -38,13 +41,15 @@ export default function({packageName, umdName, input, getExtraConfig = () => {},
             resolve({
               customResolveOptions: {
                 moduleDirectory: 'node_modules',
+                extensions: ['.ts', '.tsx'],
               },
             }),
             babel({
               exclude: 'node_modules/**',
+              extensions: ['.ts', '.tsx'],
               ...getPluginsForSpec(spec, getExtraPresets, getExtraPlugins)
             }),
-            compress && terser(),
+            compress && terser({sourcemap: compress}),
           ]),
         },
         getExtraConfig({target, format, specs, spec, ext})

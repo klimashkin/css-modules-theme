@@ -1,3 +1,5 @@
+import * as Types from '../types';
+
 /**
  * Takes theme object and returns the new one, properties of which start with the given prefix
  *
@@ -11,9 +13,9 @@
  * =>
  * {x: 'Comp_item-x', y: 'Comp_item-y'}
  */
-export default function filterThemeWithPrefix(theme, prefix) {
+export default function filterThemeWithPrefix(theme: Types.Theme, prefix: Types.Prefix): Types.Theme {
   const prefixLength = prefix.length;
-  const result = {};
+  const result: Types.Theme = {};
 
   // for..in plus indexOf is still the fastest way to filter object
   for (const key in theme) {

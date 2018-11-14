@@ -1,25 +1,30 @@
 import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
+import * as T from './types';
 
-const composedThemesCacheMap = new WeakMap();
-const prefixedThemesCacheMap = new WeakMap();
+const Compose = T.Compose;
+export type Prefix = T.Prefix;
+export type Theme = T.Theme;
+export type ThemeOptions = T.ThemeOptions;
+export type ComposedThemesCacheItem = T.ComposedThemesCacheItem;
+export type ComposedThemesCacheMap = T.ComposedThemesCacheMap;
+export type PrefixedThemesCacheMap = T.PrefixedThemesCacheMap;
 
-export const COMPOSE_MERGE = 'merge';
-export const COMPOSE_ASSIGN = 'assign';
-export const COMPOSE_REPLACE = 'replace';
+const composedThemesCacheMap: ComposedThemesCacheMap = new WeakMap();
+const prefixedThemesCacheMap: PrefixedThemesCacheMap = new WeakMap();
 
 /**
  * Filter theme object with a given prefix and cache the result which will be used on subsequent calls with the same params
  * See {@link filterThemeWithPrefix} for parameters list
  */
-export const getCachedPrefixedTheme = (theme, prefix) => {
+const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
   let ownPrefixedItems = prefixedThemesCacheMap.get(theme);
   let ownPrefixeditem;
 
-  if (ownPrefixedItems) {
-    ownPrefixeditem = ownPrefixedItems.find(item => item.theme === theme && item.prefix === prefix);
-  } else {
+  if (ownPrefixedItems === undefined) {
     ownPrefixedItems = [];
     prefixedThemesCacheMap.set(theme, ownPrefixedItems);
+  } else {
+    ownPrefixeditem = ownPrefixedItems.find(item => item.theme === theme && item.prefix === prefix);
   }
 
   if (ownPrefixeditem === undefined) {
@@ -41,11 +46,11 @@ export const getCachedPrefixedTheme = (theme, prefix) => {
  *
  * @returns {Object}
  */
-export const composeTheme = themes => {
+const composeTheme = (themes: ThemeOptions[]): Theme => {
   const first = themes[0];
   let cacheCheck = !first.noCache;
-  let composeMethod = first.compose || COMPOSE_MERGE;
-  let resultTheme;
+  let composeMethod = first.compose || Compose.Merge;
+  let resultTheme: Theme;
 
   if (first.prefix) {
     resultTheme = getCachedPrefixedTheme(first.theme, first.prefix);
@@ -55,7 +60,6 @@ export const composeTheme = themes => {
 
   for (let i = 1; i < themes.length; i++) {
     let {theme, prefix, compose, noCache = false} = themes[i];
-    const withPrefix = typeof prefix === 'string' && prefix.length > 0;
     let composedTheme;
 
     if (compose) {
@@ -68,7 +72,7 @@ export const composeTheme = themes => {
 
     let composedCachedItem;
 
-    if (cacheCheck && composeMethod !== COMPOSE_REPLACE) {
+    if (cacheCheck && composeMethod !== Compose.Replace) {
       let composedThemesCache = composedThemesCacheMap.get(theme);
 
       if (composedThemesCache === undefined) {
@@ -87,23 +91,23 @@ export const composeTheme = themes => {
 
       composedCachedItem = {
         againstTheme: resultTheme, prefix, composeMethod: composeMethod,
-      };
+      } as ComposedThemesCacheItem;
 
       composedThemesCache.push(composedCachedItem);
     }
 
-    if (withPrefix) {
+    if (typeof prefix === 'string' && prefix.length > 0) {
       composedTheme = (noCache ? filterThemeWithPrefix : getCachedPrefixedTheme)(theme, prefix);
     } else {
       composedTheme = theme;
     }
 
-    if (composeMethod === COMPOSE_REPLACE) {
+    if (composeMethod === Compose.Replace) {
       resultTheme = composedTheme;
       continue;
     }
 
-    if (composeMethod === COMPOSE_MERGE) {
+    if (composeMethod === Compose.Merge) {
       composedTheme = {...composedTheme};
 
       for (const key in resultTheme) {
@@ -117,7 +121,7 @@ export const composeTheme = themes => {
           }
         }
       }
-    } else if (composeMethod === COMPOSE_ASSIGN) {
+    } else if (composeMethod === Compose.Assign) {
       composedTheme = {...resultTheme, ...composedTheme};
     }
 
@@ -130,3 +134,5 @@ export const composeTheme = themes => {
 
   return resultTheme;
 };
+
+export {Compose, composeTheme, getCachedPrefixedTheme};
