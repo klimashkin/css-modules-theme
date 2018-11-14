@@ -65,7 +65,7 @@ it('mixThemeWithProps should return prefixed and composed theme', () => {
     ...restProps
   } = mixThemeWithProps(themeIcon, {
     prop: 'SomePropValue',
-    theme: {...themeButton}, themePrefix: 'firstIcon-', themeCompose: Compose.Merge
+    theme: {...themeButton}, themePrefix: 'firstIcon-', themeCompose: Compose.Merge,
   });
 
   expect(theme).toStrictEqual({
@@ -86,7 +86,7 @@ it('mixThemeWithProps with context and option props', () => {
     theme: {
       icon: 'Context_icon',
       svg: 'Context_svg',
-    }
+    },
   };
   const props = {
     id: 'SomePropValue',

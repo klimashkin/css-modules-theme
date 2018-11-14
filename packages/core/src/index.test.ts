@@ -29,9 +29,9 @@ describe('Single theme', () => {
     {theme: themeIcon, compose: Compose.Replace},
   ])(
     'should return passed theme as is from %p',
-    (params) => {
+    params => {
       expect(composeTheme([params])).toStrictEqual(themeIcon);
-    },
+    }
   );
 
   it('should return theme filtered by prefix', () => {
@@ -107,7 +107,7 @@ describe('Two themes', () => {
       {
         theme = composeTheme([a, b]);
         expect(theme).toStrictEqual(expectedResult);
-        expect(composeTheme([a, b])).toBe(theme)
+        expect(composeTheme([a, b])).toBe(theme);
       }
 
       // But second call with noCache should return a new object
@@ -118,9 +118,9 @@ describe('Two themes', () => {
 
         theme = composeTheme([{...a}, {...b, noCache: true}]);
         expect(theme).toStrictEqual(expectedResult);
-        expect(composeTheme([{...a}, {...b, noCache: true}])).not.toBe(theme)
+        expect(composeTheme([{...a}, {...b, noCache: true}])).not.toBe(theme);
       }
-    },
+    }
   );
 
   it('should filter and compose by merge', () => {
@@ -183,7 +183,7 @@ describe('Two themes', () => {
       {
         theme = composeTheme([a, b]);
         expect(theme).toStrictEqual(expectedResult);
-        expect(composeTheme([a, b])).toBe(theme)
+        expect(composeTheme([a, b])).toBe(theme);
       }
 
       // But second call with noCache should return a new object
@@ -194,9 +194,9 @@ describe('Two themes', () => {
 
         theme = composeTheme([{...a}, {...b, noCache: true}]);
         expect(theme).toStrictEqual(expectedResult);
-        expect(composeTheme([{...a}, {...b, noCache: true}])).not.toBe(theme)
+        expect(composeTheme([{...a}, {...b, noCache: true}])).not.toBe(theme);
       }
-    },
+    }
   );
 
   it('should filter and compose by assign', () => {
@@ -247,7 +247,7 @@ describe('Two themes', () => {
     'should compose by replace [%p, %p]',
     (...args: types.ThemeOptions[]) => {
       expect(composeTheme(args)).toBe(themeButton);
-    },
+    }
   );
 
   it('should filter and compose by replace', () => {
@@ -284,5 +284,3 @@ describe('Two themes', () => {
     }
   });
 });
-
-

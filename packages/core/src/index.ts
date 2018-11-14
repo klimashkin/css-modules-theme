@@ -59,7 +59,7 @@ const composeTheme = (themes: ThemeOptions[]): Theme => {
   }
 
   for (let i = 1; i < themes.length; i++) {
-    let {theme, prefix, compose, noCache = false} = themes[i];
+    const {theme, prefix, compose, noCache = false} = themes[i];
     let composedTheme;
 
     if (compose) {
@@ -89,9 +89,7 @@ const composeTheme = (themes: ThemeOptions[]): Theme => {
         }
       }
 
-      composedCachedItem = {
-        againstTheme: resultTheme, prefix, composeMethod: composeMethod,
-      } as ComposedThemesCacheItem;
+      composedCachedItem = {againstTheme: resultTheme, prefix, composeMethod} as ComposedThemesCacheItem;
 
       composedThemesCache.push(composedCachedItem);
     }

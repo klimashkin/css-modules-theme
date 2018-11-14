@@ -1,34 +1,31 @@
 import {composeTheme, Compose} from '@css-modules-theme/core';
-import * as T from '@css-modules-theme/core/dist/types';
+import * as Types from '@css-modules-theme/core/dist/types';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-export type Theme = T.Theme;
-export type Prefix = T.Prefix;
+export type Theme = Types.Theme;
+export type Prefix = Types.Prefix;
 
-export type ThemeProps = {
-  theme?: Theme,
-  themePrefix?: Prefix,
-  themeNoCache?: boolean,
-  themeCompose?: T.Compose,
-};
-
-export type ComposeOptions = {
-  theme?: Theme,
-  prefix?: Prefix,
-  compose?: T.Compose,
-  noCache?: boolean,
-};
-
-interface ComposeThemeFromProps {
-  <T extends ThemeProps>(ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions): Theme;
+export interface ThemeProps {
+  theme?: Theme;
+  themePrefix?: Prefix;
+  themeNoCache?: boolean;
+  themeCompose?: Types.Compose;
 }
 
-interface MixThemeFromProps {
-  <T extends ThemeProps>(
+export interface ComposeOptions {
+  theme?: Theme;
+  prefix?: Prefix;
+  compose?: Types.Compose;
+  noCache?: boolean;
+}
+
+type ComposeThemeFromProps =
+  <T extends ThemeProps>(ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions) => Theme;
+
+type MixThemeFromProps = <T extends ThemeProps>(
     ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions & {props?: T}
-  ):  Omit<T, 'themePrefix' | 'themeNoCache' | 'themeCompose'>;
-}
+  ) =>  Omit<T, 'themePrefix' | 'themeNoCache' | 'themeCompose'>;
 
 /**
  * Takes theme styles object and returns a composed one, properties of which optionally start with given prefix
