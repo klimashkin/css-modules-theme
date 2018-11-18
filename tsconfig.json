@@ -1,8 +1,6 @@
 {
   "extends": "./tsconfig.compiler.json",
-  "files": [],
   "compilerOptions": {
-    "target": "ESNEXT",
     "noEmit": true
   },
   "references": [

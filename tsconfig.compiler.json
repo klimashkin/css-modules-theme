@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ESNEXT",
+    "target": "esnext",
     "module": "commonjs",
+    "lib": ["esnext"],
     "noEmit": false,
     "noEmitOnError": true,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "listFiles": true,
 

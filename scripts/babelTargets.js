@@ -25,7 +25,7 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
         ...getExtraPlugins(specs.ES2015),
       ],
     };
-  } if (spec === specs.ES2018) {
+  } else if (spec === specs.ES2018) {
     result = {
       presets: [
         ['@babel/preset-typescript', {isTSX: false}],

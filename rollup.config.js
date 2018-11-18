@@ -25,7 +25,6 @@ const targets = {
 };
 
 export default function({packageName, umdName, input, getExtraConfig = () => {}, getExtraPresets, getExtraPlugins}) {
-  console.log(input);
   return Object.entries(targets).reduce((config, [target, {format, specs}]) =>
     config.concat(specs.reduce((config, {spec, ext = format, compress = false}) => {
       config.push(_.merge(
