@@ -101,11 +101,10 @@ export const composeThemeFromProps: ComposeThemeFromProps = (ownTheme, propsOrCo
 export const mixThemeWithProps: MixThemeFromProps = (ownTheme, propsOrContext, options = {}) => {
   const props = options.props || (Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext);
   const {
-    themePrefix, themeCompose, themeNoCache,
-    // @ts-ignore Ignore taking the rest of Generic until TS starts supporting it
-    ...restProps
+    themePrefix, themeCompose, themeNoCache, ...restProps
   } = props;
 
+  // @ts-ignore Ignore assigning to the same property until https://github.com/Microsoft/TypeScript/issues/28952
   restProps.theme = composeThemeFromProps(ownTheme, propsOrContext, options);
 
   return restProps;
