@@ -36,6 +36,7 @@
     "babel-jest": "~23.6.0",
     "eslint": "5.10.0",
     "eslint-plugin-typescript": "0.14.0",
+    "husky": "1.2.0",
     "jest": "~23.6.0",
     "jest-circus": "~23.6.0",
     "lerna": "~3.6.0",
@@ -58,6 +59,11 @@
     "rollup": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
     "lint": "eslint . --ext .js --ext .ts",
     "prepublishOnly": "npm run lint && npm run clean && npm run types && npm run rollup && npm run test"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "engines": {
     "node": ">=8.10.0",
