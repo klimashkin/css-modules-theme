@@ -34,6 +34,8 @@
     "@types/node": "~10.12.12",
     "babel-core": "~7.0.0-bridge.0",
     "babel-jest": "~23.6.0",
+    "eslint": "5.10.0",
+    "eslint-plugin-typescript": "0.14.0",
     "jest": "~23.6.0",
     "jest-circus": "~23.6.0",
     "lerna": "~3.6.0",
@@ -42,8 +44,8 @@
     "rollup-plugin-babel": "~4.0.3",
     "rollup-plugin-node-resolve": "~4.0.0",
     "rollup-plugin-terser": "~3.0.0",
-    "tslint": "~5.11.0",
     "typescript": "~3.2.2",
+    "typescript-eslint-parser": "21.0.2",
     "utility-types": "~2.1.0"
   },
   "dependencies": {},
@@ -54,7 +56,7 @@
     "bootstrap": "lerna bootstrap",
     "clean": "lerna exec -- rimraf dist",
     "rollup": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
-    "lint": "tslint -e \"node_modules/**\" -e \"packages/*/dist/**\" **/*.ts",
+    "lint": "eslint . --ext .js --ext .ts",
     "prepublishOnly": "npm run lint && npm run clean && npm run types && npm run rollup && npm run test"
   },
   "engines": {

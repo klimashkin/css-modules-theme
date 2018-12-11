@@ -9,9 +9,9 @@ export default getRollupConfig({
     external: ['@css-modules-theme/core'],
     output: {
       globals: {
-        '@css-modules-theme/core': 'cssModulesThemeCore'
+        '@css-modules-theme/core': 'cssModulesThemeCore',
       },
     },
   }),
-  getExtraPlugins: spec => [['@babel/plugin-transform-react-jsx', {useBuiltIns: spec !== specs.ES5}]]
+  getExtraPlugins: spec => [['@babel/plugin-transform-react-jsx', {useBuiltIns: spec !== specs.ES5}]],
 });

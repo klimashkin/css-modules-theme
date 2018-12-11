@@ -96,7 +96,8 @@ it('mixThemeWithProps with context and option props', () => {
     theme,
     // @ts-ignore Test that theme* props really do not exist
     themePrefix, themeCompose, themeNoCache,
-    ...restProps} = mixThemeWithProps(themeIcon, [context, props], {props});
+    ...restProps
+  } = mixThemeWithProps(themeIcon, [context, props], {props});
 
   expect(theme).toStrictEqual({
     icon: 'Icon_icon Context_icon Button_firstIcon-icon',

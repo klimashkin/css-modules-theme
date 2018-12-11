@@ -1,8 +1,6 @@
 import {composeTheme, Compose} from '@css-modules-theme/core';
 import * as Types from '@css-modules-theme/core/dist/types';
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
 export type Theme = Types.Theme;
 export type Prefix = Types.Prefix;
 
@@ -22,10 +20,6 @@ export interface ComposeOptions {
 
 type ComposeThemeFromProps =
   <T extends ThemeProps>(ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions) => Theme;
-
-type MixThemeFromProps = <T extends ThemeProps>(
-    ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions & {props?: T}
-  ) =>  Omit<T, 'themePrefix' | 'themeNoCache' | 'themeCompose'>;
 
 /**
  * Takes theme styles object and returns a composed one, properties of which optionally start with given prefix
@@ -98,7 +92,9 @@ export const composeThemeFromProps: ComposeThemeFromProps = (ownTheme, propsOrCo
  *
  * const {theme, onClick, ...restProps} = mixThemeWithProps(styles, this.props);
  */
-export const mixThemeWithProps: MixThemeFromProps = (ownTheme, propsOrContext, options = {}) => {
+export const mixThemeWithProps = <T extends ThemeProps>(
+  ownTheme: Theme, propsOrContext: T | T[], options: ComposeOptions & {props?: T} = {}
+) => {
   const props = options.props || (Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext);
   const {
     themePrefix, themeCompose, themeNoCache, ...restProps

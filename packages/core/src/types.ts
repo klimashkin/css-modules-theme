@@ -1,4 +1,4 @@
-export enum Compose {Merge = 'merge', Assign = 'assign', Replace = 'replace'}
+export enum Compose {Merge = 'merge', Assign = 'assign', Replace = 'replace'} // eslint-disable-line no-unused-vars
 export type Prefix = string;
 
 export interface Theme {

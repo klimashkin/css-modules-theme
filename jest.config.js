@@ -20,7 +20,7 @@ module.exports = {
     '^.+\\.[tj]sx?$': '<rootDir>/jest.transform.js',
   },
   transformIgnorePatterns: [
-    "<rootDir>/packages/.*(node_modules)(?!.*css-modules-theme.*).*$",
+    '<rootDir>/packages/.*(node_modules)(?!.*css-modules-theme.*).*$',
   ],
   verbose: true,
 };

@@ -115,7 +115,7 @@ const composeTheme = (themes: ThemeOptions[]): Theme => {
           if (composedThemeValue === undefined) {
             composedTheme[key] = resultTheme[key];
           } else {
-            composedTheme[key] = `${resultTheme[key]} ${composedThemeValue}` ;
+            composedTheme[key] = `${resultTheme[key]} ${composedThemeValue}`;
           }
         }
       }

@@ -24,7 +24,7 @@ const targets = {
   },
 };
 
-export default function({packageName, umdName, input, getExtraConfig = () => {}, getExtraPresets, getExtraPlugins}) {
+export default function ({packageName, umdName, input, getExtraConfig = () => {}, getExtraPresets, getExtraPlugins}) {
   return Object.entries(targets).reduce((config, [target, {format, specs}]) =>
     config.concat(specs.reduce((config, {spec, ext = format, compress = false}) => {
       config.push(_.merge(
@@ -46,7 +46,7 @@ export default function({packageName, umdName, input, getExtraConfig = () => {},
             babel({
               exclude: 'node_modules/**',
               extensions: ['.ts', '.tsx'],
-              ...getPluginsForSpec(spec, getExtraPresets, getExtraPlugins)
+              ...getPluginsForSpec(spec, getExtraPresets, getExtraPlugins),
             }),
             compress && terser({sourcemap: compress}),
           ]),
@@ -56,5 +56,5 @@ export default function({packageName, umdName, input, getExtraConfig = () => {},
 
       return config;
     }, [])),
-  [])
+  []);
 }
