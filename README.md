@@ -1,7 +1,11 @@
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+![CSS Modules Theme](https://raw.githubusercontent.com/klimashkin/css-modules-theme/master/logo.svg?sanitize=true "CSS Modules Theme")
 
-# CSS MODULES THEME
+[![Written in TypeScript](https://img.shields.io/badge/Written%20in-TypeScript-4e6ef2.svg)](https://www.typescriptlang.org)
+[![Maintained with Lerna](https://img.shields.io/badge/Maintained%20with-Lerna-ff9100.svg)](https://lernajs.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-00c853.svg)](https://raw.githubusercontent.com/klimashkin/css-modules-theme/master/LICENSE)
 
+- [CSS Modules](#css-modules)
+- [Theming](#theming)
 - [Motivation](#theme-composition-for-css-modules)
 - [@css-modules-theme/core](#css-modules-themecore)
   * [getTheme](#getthemeowntheme-injecttheme-options)
@@ -9,17 +13,17 @@
   * [getThemeFromProps](#getthemefrompropsowntheme-props-options)
   * [mixThemeWithProps](#mixthemewithprops)
 - [Bundling](#bundling)
+- [Other Libraries](#other-libraries)
 
-# Theme composition for CSS Modules  
-  
-CSS Modules give you a very powerful way to write statically compiled, locally scoped and composable css selectors.
-Local scope is the corner stone of CSS Modules, it finally solves clashes of css selectors by generating unique class names on compilation time. Therefore, CSS Modules becomes a natural choice in the world of componentized front-end development, like in React.
+## CSS Modules
+A [CSS Module](https://github.com/css-modules/css-modules) is just a CSS file in which all class names and animation names are transformed on build time to be scoped locally by default.
+CSS Modules give you a very powerful way to write ***statically compiled***, ***isolated*** and ***composable*** css selectors, so it become a natural choice in the world of componentized front-end development, like in React.
+* Statically compiled, because you generate result css file(s) and corresponding javascript mapping only once on compilation time when you build your assets. That is the main difference between CSS Modules and CSS-in-JS approach, in the first case you get regular css files, in the second you generate css definition in browser during runtime on each component render. Static CSSOM tree is always faster than dynamically generated one - browsers have spent more than 20 years optimizing that work. With CSS Modules you produce final css in build time using loaders for popular bundlers, like for [weback](https://github.com/webpack-contrib/css-loader/#modules) or [rollup](https://github.com/egoist/rollup-plugin-postcss#modules).
+* Isolated, because your bundler generates uniq css class names on bundle creation time according to a naming rule you specify. That is called 'local scope', which is the corner stone of CSS, and you get it automatically.
+* Composable, because in certain cases you can compose (concatenate) classnames from the same or different files on bundle creation time and avoid utilizing cpu in runtime.
 
-Local scope brings a challenge: how to style children component from parent if they are isolated and their final selector names are unknown during development process?
-Theming is the answer.
-  
-Let's recap on what is CSS Module. On one side it’s just a standard css file, on JS side it’s an object that maps real (generated) class names from that file with names you give them during development.
-For instance, imagine you have the following css code:
+Let's recap on what CSS Module is. On one side it’s just a standard css file, imported value of which on JS side becomes a simple flat object that maps names you give classes during development with the real (generated) class names from that final css file.
+For instance, imagine you have the following `Button.css` code:
 ```css  
 .button {  
   display: inline-block;
@@ -28,7 +32,7 @@ For instance, imagine you have the following css code:
   background-color: green;  
 }  
 .secondary {  
-  background-color: red;  
+  background-color: blue;  
 }  
 ```  
 From the above css definition, depending on css-loader setting (when using a module bundler like 'webpack'), we might get generated css like this: 
@@ -40,10 +44,10 @@ From the above css definition, depending on css-loader setting (when using a mod
   background-color: green;  
 }  
 .ac {  
-  background-color: red;  
+  background-color: blue;  
 }  
 ```
-And in JavaSctipt you get the following object:  
+And in JavaSctipt you get the following mapping `styles` object after doing `import styles from './Button.css'`:  
 ```javascript  
 { 
   button: 'aa',
@@ -51,6 +55,96 @@ And in JavaSctipt you get the following object:
   secondary: 'ac',
 }
 ```
+So, class names that we wrote in css file become keys of a mapping object, while real classname are automatically generated and become values of that object. That's it!
+And in your, let's say, react `Button.js` component you can use it this way:
+```javascript  
+import cx from 'classnames';
+import PropTypes from 'prop-types';
+import styles from './Button.css';
+
+class Button {
+  static propTypes = {
+    type: PropTypes.oneOf(['primary', 'secondary']),
+  }
+  static defaultProps = {
+    type: 'primary',
+  }
+  render() {
+    return <button type="submit" className={cx(styles.button, styles[this.props.type])}/>
+  }
+}
+```
+Which will be rendered into:
+```html
+<button type="submit" class="aa ab"/>
+```
+Have you noticed how we took the real classnames from `styles` object simply by accessing property using classnames that we gave in css definition?
+Moreover, in case of getting corresponding classname for the passed `type` property we can simply use brackets notation if possible type names are the same as given classnames in css. 
+That is superuseful - no ternaries, conditions or superfluous `cx({primary: type === 'primary', secondary: type === 'secondary'})` are needed, which is good for performance and reasoning.
+
+Example above illustrated us two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - composition.
+Our Button component will always have some type, that means both `.button` and either `.primary` or `.secondary` classes will be applied. Currently we have to concatenate them in runtime on each render, but we can do better. Let's use `composes` keyword in our `Button.css`:
+```css  
+.button {  
+  display: inline-block;
+}  
+.primary {
+  composes: button; 
+  background-color: green;  
+}  
+.secondary {
+  composes: button;
+  background-color: blue;  
+}  
+``` 
+Our generated css will still remain the same:
+```css  
+.aa {
+  display: inline-block;
+}
+.ab {
+  background-color: green;  
+}
+.ac {
+  background-color: blue;  
+}  
+```
+But our `styles` object will become:
+```javascript  
+{ 
+  button: 'aa',
+  primary: 'ab aa',
+  secondary: 'ac aa',
+}
+```
+A-ha! So if we insert `styles.primary` or `styles.secondary` it will actually insert two real classnames: `ab aa` or `ab ac`, and we can simplify our component:
+```javascript  
+import PropTypes from 'prop-types';
+import styles from './Button.css';
+
+class Button {
+  static propTypes = {
+    type: PropTypes.oneOf(['primary', 'secondary']),
+  }
+  static defaultProps = {
+    type: 'primary',
+  }
+  render() {
+    return <button type="submit" className={styles[this.props.type]}/>
+  }
+}
+```
+Produced html will still be the same:
+```html
+<button type="submit" class="aa ab"/>
+``` 
+We don't need `cx` in that case anymore! With CSS Modules, if two or more class names always go along with each other, you can compose them in one right in css and they will be concatenated on compilation time!
+And you get a little performance boost for free, you just need to desigh your css right. And it's not as insignificant as it might seem, you'll appreciate that on complex pages with thousands of small rendered components. You are welcome!
+
+## Theming 
+
+Local scope brings a challenge: how to style children component from parent if they are isolated and their final selector names are unknown during development process?
+Theming is the answer.
 
 How will a page that uses Button component modify its `primary` styling if it doesn't know `aa` classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's prop definitions can grow exponentially making prop management difficult.
 
@@ -75,7 +169,7 @@ From the table example mentioned above, the new table implementation with **css-
 
 Project includes two (for now) scoped packages: [@css-modules-theme/core](https://github.com/klimashkin/css-modules-theme/tree/master/packages/core) and [@css-modules-theme/react](https://github.com/klimashkin/css-modules-theme/tree/master/packages/react)
 
-## @css-modules-theme/core
+### @css-modules-theme/core
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
@@ -85,7 +179,7 @@ Project includes two (for now) scoped packages: [@css-modules-theme/core](https:
 
 1.5kb module (890bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
-### `getTheme(ownTheme, [injectTheme], [options])`
+#### `getTheme(ownTheme, [injectTheme], [options])`
 Function that returns a new theme as a result of composition of two given themes. Takes following arguments
 
  - `ownTheme` *(Object)* - First CSS modules object, used as a default (origin) theme for composition
@@ -99,7 +193,7 @@ Function that returns a new theme as a result of composition of two given themes
    - [`injectPrefix`] *(String)* - Prefix to filter and strip out properties in `injectPrefix` that don't satisfy that prefix
    - [`noCache = false`] *(Boolean)* - In case you generate pretty big `injectTheme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
 
-### Examples
+#### Examples
 Assume we have Icon component with following theme:
 ```javascript
 const ownTheme = {
@@ -155,7 +249,7 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
   'small': 'e',
 }
 ```
-## @css-modules-theme/react
+### @css-modules-theme/react
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
@@ -164,7 +258,7 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
   * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`
 
 
-### `getThemeFromProps(ownTheme, props, [options])`
+#### `getThemeFromProps(ownTheme, props, [options])`
 
 Helper module that makes call of `getTheme` easier in React components, so you can just pass props to this method and it will map theme specific props with getTheme arguments.
 
@@ -181,7 +275,7 @@ Helper module that makes call of `getTheme` easier in React components, so you c
    - [`ownPrefix`] *(String)* - Goes directly to `getTheme`
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
-### Examples
+#### Examples
 Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method in Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use the prefix `icon-` in own CSS declaration: buttonStyles.css to concatenate the matching Icon classnames in iconStyles.css.
 As a result using `merge`, Button will render the bigger green Icon during the merge declaration by adding own classname to Icon's large selector definition.(e.g {large: "Icon_c Button_z"})
 We can call `getThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
@@ -283,7 +377,7 @@ export default class extends Component {
 }
 ```
 
-### `mixThemeWithProps`
+#### `mixThemeWithProps`
 
 What if your component just takes some properties from own `props` and pass all the rest down to another component as is. In that case you'd need to take all `theme*` props out, something like this:
 ```javascript
@@ -359,5 +453,4 @@ mainFields: ['es2018', 'es2017', 'es2016', 'es2015', 'module', 'browser', 'main'
 ````
 You get the idea. You can compile your application into several bundles with different compilation levels and have different webpack configs for them with different set of `mainFields`, to give to the modern browsers almost pure non compiled code, that takes less space and have fewer transformations, which leads to better performance.
 
-## LICENCE
-[MIT](https://github.com/klimashkin/css-modules-theme/blob/master/LICENSE)
+## Other Libraries
