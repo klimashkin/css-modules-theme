@@ -17,7 +17,7 @@ module.exports = {
     'jsx',
   ],
   transform: {
-    '^.+\\.[tj]sx?$': '<rootDir>/jest.transform.js',
+    '^.+\\.[tj]sx?$': 'ts-jest',
   },
   transformIgnorePatterns: [
     '<rootDir>/packages/.*(node_modules)(?!.*css-modules-theme.*).*$',

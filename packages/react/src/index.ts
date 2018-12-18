@@ -1,25 +1,21 @@
 import {composeTheme, Compose} from '@css-modules-theme/core';
-import * as Types from '@css-modules-theme/core/dist/types';
+import {Theme, Prefix} from '@css-modules-theme/core/dist/types';
 
-export type Theme = Types.Theme;
-export type Prefix = Types.Prefix;
+export {Theme, Prefix};
 
 export interface ThemeProps {
   theme?: Theme;
   themePrefix?: Prefix;
   themeNoCache?: boolean;
-  themeCompose?: Types.Compose;
+  themeCompose?: Compose;
 }
 
 export interface ComposeOptions {
   theme?: Theme;
   prefix?: Prefix;
-  compose?: Types.Compose;
+  compose?: Compose;
   noCache?: boolean;
 }
-
-type ComposeThemeFromProps =
-  <T extends ThemeProps>(ownTheme: Theme, propsOrContext: T | T[], options?: ComposeOptions) => Theme;
 
 /**
  * Takes theme styles object and returns a composed one, properties of which optionally start with given prefix
@@ -50,7 +46,9 @@ type ComposeThemeFromProps =
  * =>
  * {x: 'Comp1_x Comp2_item-x', y: 'Comp1_y Comp2_item-y', z: 'Comp1_z}
  */
-export const composeThemeFromProps: ComposeThemeFromProps = (ownTheme, propsOrContext, options = {}) => {
+export const composeThemeFromProps = <T extends ThemeProps>(
+  ownTheme: Theme, propsOrContext: T | T[], options: ComposeOptions = {}
+): Theme => {
   const themes = [{
     theme: ownTheme,
     prefix: options.prefix,

@@ -2,6 +2,7 @@ import _ from 'lodash';
 import babel from 'rollup-plugin-babel';
 import {terser} from 'rollup-plugin-terser';
 import resolve from 'rollup-plugin-node-resolve';
+import typescript from 'rollup-plugin-typescript2';
 import {specs, getPluginsForSpec} from './scripts/babelTargets';
 
 const targets = {
@@ -41,6 +42,20 @@ export default function ({packageName, umdName, input, getExtraConfig = () => {}
               customResolveOptions: {
                 moduleDirectory: 'node_modules',
                 extensions: ['.ts', '.tsx'],
+              },
+            }),
+            typescript({
+              check: true,
+              clean: true,
+              verbosity: 1,
+              abortOnError: true,
+              tsconfig: './tsconfig.compiler.json',
+              tsconfigOverride: {
+                compilerOptions: {
+                  composite: false,
+                  declaration: false,
+                  declarationMap: false,
+                },
               },
             }),
             babel({

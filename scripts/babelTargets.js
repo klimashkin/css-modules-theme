@@ -9,7 +9,6 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
     result = {
       presets: [
         ['@babel/preset-env', {loose: true, modules: false}],
-        ['@babel/preset-typescript', {isTSX: false}],
         ...getExtraPresets(specs.ES5),
       ],
       plugins: getExtraPlugins(specs.ES5),
@@ -17,7 +16,6 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
   } else if (spec === specs.ES2015) {
     result = {
       presets: [
-        ['@babel/preset-typescript', {isTSX: false}],
         ...getExtraPresets(specs.ES2015),
       ],
       plugins: [
@@ -28,7 +26,6 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
   } else if (spec === specs.ES2018) {
     result = {
       presets: [
-        ['@babel/preset-typescript', {isTSX: false}],
         ...getExtraPresets(specs.ES2015),
       ],
       plugins: [

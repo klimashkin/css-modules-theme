@@ -1,13 +1,8 @@
 import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
-import * as T from './types';
-
-const Compose = T.Compose;
-export type Prefix = T.Prefix;
-export type Theme = T.Theme;
-export type ThemeOptions = T.ThemeOptions;
-export type ComposedThemesCacheItem = T.ComposedThemesCacheItem;
-export type ComposedThemesCacheMap = T.ComposedThemesCacheMap;
-export type PrefixedThemesCacheMap = T.PrefixedThemesCacheMap;
+import {
+  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap,
+  PrefixedThemesCacheMap, ThemeOptions, Theme, Prefix,
+} from './types';
 
 const composedThemesCacheMap: ComposedThemesCacheMap = new WeakMap();
 const prefixedThemesCacheMap: PrefixedThemesCacheMap = new WeakMap();
