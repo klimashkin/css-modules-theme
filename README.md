@@ -83,7 +83,7 @@ Moreover, in case of getting corresponding classname for the passed `type` prope
 That is superuseful - no ternaries, conditions or superfluous `cx({primary: type === 'primary', secondary: type === 'secondary'})` are needed, which is good for performance and reasoning.
 
 Example above illustrated us two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - composition.
-Our Button component will always have some type, that means both `.button` and either `.primary` or `.secondary` classes will be applied. Currently we have to concatenate them in runtime on each render, but we can do better. Let's use `composes` keyword in our `Button.css`:
+Our Button component will always have some type, which means both `.button` and either `.primary` or `.secondary` classes will be applied. Currently we have to concatenate them in runtime on each render, but we can do better. Let's use `composes` keyword in our `Button.css`:
 ```css  
 .button {  
   display: inline-block;
@@ -117,7 +117,7 @@ But our `styles` object will become:
   secondary: 'ac aa',
 }
 ```
-A-ha! So if we insert `styles.primary` or `styles.secondary` it will actually insert two real classnames: `ab aa` or `ab ac`, and we can simplify our component:
+A-ha! So if we insert `styles.primary` or `styles.secondary` it will actually insert two real classnames: `ab aa` or `ab ac`, and we can simplify our component to:
 ```javascript  
 import PropTypes from 'prop-types';
 import styles from './Button.css';
@@ -139,16 +139,16 @@ Produced html will still be the same:
 <button type="submit" class="aa ab"/>
 ``` 
 We don't need `cx` in that case anymore! With CSS Modules, if two or more class names always go along with each other, you can compose them in one right in css and they will be concatenated on compilation time!
-And you get a little performance boost for free, you just need to desigh your css right. And it's not as insignificant as it might seem, you'll appreciate that on complex pages with thousands of small rendered components. You are welcome!
+And you get a little performance boost in runtime for free, you just need to design your css right. And it's not as insignificant as it might seem, you'll appreciate that on complex pages with thousands of small rendered components. You are welcome!
 
 ## Theming 
 
-Local scope brings a challenge: how to style children component from parent if they are isolated and their final selector names are unknown during development process?
+Local scope brings a challenge: how to style children component from parent if they are isolated and their real classnames are unknown during development process?
 Theming is the answer.
 
-How will a page that uses Button component modify its `primary` styling if it doesn't know `aa` classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's prop definitions can grow exponentially making prop management difficult.
+How will a page that uses Button component modify its `primary` styling if it doesn't know real corresponding `ab` classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's props combination can grow exponentially making prop management challenging.
 
-The solution to avoid overwhelming a component with boolean props is to take two css-module objects and merge them together to get a final object. The first object can be called original theme, or ownTheme of the component, and the second one can be called injectTheme since we mix it into the first one. Both 'ownTheme' and 'injectTheme' can be synonymous to parent: injectTheme, child: ownTheme. 
+The solution to avoid overwhelming a component with boolean props is to take two css-module objects, own one and from parent, and merge them together to get a final object. The first object can be called original theme, or own theme of the component, and the parent one can be called injecting theme since we mix it into the first one. 
 
 Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/javivelasco/react-css-themr). It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
 Why "unfortunately"? We can implement a forwardRef support with a HOC but using HOC leads to significant performance degradation. Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab with DevTools by noticing the first render of your page takes hundreds of milliseconds.
