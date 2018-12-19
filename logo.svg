@@ -1,21 +1,22 @@
-<svg width="450" height="310" xmlns="http://www.w3.org/2000/svg">
- <g>
-  <title>CSS Modules Theme</title>
-  <rect fill="none" id="canvas_background" height="312" width="452" y="-1" x="-1"/>
-  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
-   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+<svg width="550" height="300" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <title>CSS Modules Theme</title>
+    <rect fill="none" id="canvas_background" height="302" width="552" y="-1" x="-1"/>
+    <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+      <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+    </g>
   </g>
- </g>
- <g>
-  <title>Layer 1</title>
-  <rect id="svg_1" height="165" width="13" y="10.4375" x="0.5" stroke-width="0" stroke="#000" fill="#ff0000"/>
-  <rect id="svg_3" height="165" width="13" y="10.4375" x="29.5" stroke-width="0" stroke="#000" fill="#ff8300"/>
-  <rect id="svg_4" height="165" width="13" y="10.4375" x="179.5" stroke-width="0" stroke="#000" fill="#30009b"/>
-  <rect id="svg_5" height="165" width="13" y="10.4375" x="147.5" stroke-width="0" stroke="#000" fill="#111184"/>
-  <rect id="svg_6" height="165" width="13" y="10.4375" x="116.5" stroke-width="0" stroke="#000" fill="#4277f4"/>
-  <rect id="svg_7" height="165" width="13" y="10.4375" x="86.5" stroke-width="0" stroke="#000" fill="#00bc00"/>
-  <rect id="svg_8" height="165" width="13" y="10.4375" x="57.5" stroke-width="0" stroke="#000" fill="#fef600"/>
-  <text stroke="#f9f93b" transform="matrix(1.904317555497695,0,0,2.6563222624799545,-319.2411615351774,-39.58037927819735) " xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="84" id="svg_9" y="80.014309" x="275.68628" stroke-width="0" fill="#ff328b">CSS</text>
-  <text stroke="#bd39ce" transform="matrix(1.3356832629977473,0,0,1.4717948436737058,-38.348880595870554,-103.52948100864886) " xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="84" id="svg_10" y="273.977569" x="28.396466" stroke-width="0" fill="#007fff">THEMING</text>
- </g>
+  <g>
+    <title>Layer 1</title>
+    <rect id="svg_1" height="165" width="13" y="10.4375" x="0.5" stroke-width="0" stroke="#000" fill="#ff0000"/>
+    <rect id="svg_3" height="165" width="13" y="10.4375" x="29.5" stroke-width="0" stroke="#000" fill="#ff8300"/>
+    <rect id="svg_4" height="165" width="13" y="10.4375" x="179.5" stroke-width="0" stroke="#000" fill="#30009b"/>
+    <rect id="svg_5" height="165" width="13" y="10.4375" x="147.5" stroke-width="0" stroke="#000" fill="#111184"/>
+    <rect id="svg_6" height="165" width="13" y="10.4375" x="116.5" stroke-width="0" stroke="#000" fill="#4277f4"/>
+    <rect id="svg_7" height="165" width="13" y="10.4375" x="86.5" stroke-width="0" stroke="#000" fill="#00bc00"/>
+    <rect id="svg_8" height="165" width="13" y="10.4375" x="57.5" stroke-width="0" stroke="#000" fill="#fef600"/>
+    <text stroke="#f9f93b" transform="matrix(1.904317555497695,0,0,2.6563222624799545,-319.2411615351774,-39.58037927819735) " xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="84" id="svg_9" y="80.014309" x="275.68628" stroke-width="0" fill="#ff328b">CSS</text>
+    <text stroke="#bd39ce" transform="matrix(1.3356832629977473,0,0,1.4717948436737058,-38.348880595870554,-103.52948100864886) " xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="84" id="svg_10" y="266.503701" x="28.396466" stroke-width="0" fill="#007fff">MODULES</text>
+    <text stroke="#bd39ce" font-style="normal" font-weight="normal" transform="rotate(-90 509.37878417968756,149.18473815917966) matrix(1.1117154929922697,0,0,1,-53.71258820568074,0) " xml:space="preserve" text-anchor="start" font-family="'Trebuchet MS', Gadget, sans-serif" font-size="84" id="svg_23" y="180.039902" x="380.388646" stroke-width="0" fill="#6fc91c">THEME</text>
+  </g>
 </svg>
