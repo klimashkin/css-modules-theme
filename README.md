@@ -6,14 +6,15 @@
 
 - [CSS Modules](#css-modules)
 - [Theming](#theming)
-- [Motivation](#theme-composition-for-css-modules)
 - [@css-modules-theme/core](#css-modules-themecore)
-  * [getTheme](#getthemeowntheme-injecttheme-options)
+  * [composeTheme](#composethemeoptions)
+  * [Compose enum](#compose-enum)
 - [@css-modules-theme/react](#css-modules-themereact)
-  * [getThemeFromProps](#getthemefrompropsowntheme-props-options)
+  * [composeThemeFromProps](#composethemefrompropsowntheme-propsOrContext-options)
   * [mixThemeWithProps](#mixthemewithprops)
-- [Bundling](#bundling)
 - [Other Libraries](#other-libraries)
+- [Bundling](#bundling)
+- [Contribution](#contribution)
 
 ## CSS Modules
 A [CSS Module](https://github.com/css-modules/css-modules) is just a CSS file in which all class names and animation names are transformed on build time to be scoped locally by default.
@@ -141,8 +142,7 @@ Produced html will still be the same:
 We don't need `cx` in that case anymore! With CSS Modules, if two or more class names always go along with each other, you can compose them in one right in css and they will be concatenated on compilation time!
 And you get a little performance boost in runtime for free, you just need to design your css right. And it's not as insignificant as it might seem, you'll appreciate that on complex pages with thousands of small rendered components. You are welcome!
 
-## Theming 
-
+## Theming
 Local scope brings a challenge: how to style children component from parent if they are isolated and their real classnames are unknown during development process?
 Theming is the answer.
 
@@ -150,22 +150,14 @@ How will a page that uses Button component modify its `primary` styling if it do
 
 The solution to avoid overwhelming a component with boolean props is to take two css-module objects, own one and from parent, and merge them together to get a final object. The first object can be called original theme, or own theme of the component, and the parent one can be called injecting theme since we mix it into the first one. 
 
-Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/javivelasco/react-css-themr). It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
-Why "unfortunately"? We can implement a forwardRef support with a HOC but using HOC leads to significant performance degradation. Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab with DevTools by noticing the first render of your page takes hundreds of milliseconds.
-
-But let's step back and think for a second. What does HOC do? It creates component instance for each wrapped instance of your component and merge your style object with theme object from a parent component instance. If we have 2000 identical components with different content, it will do it 2000 times. Hm, that doesn't sound right, because result theme object will be essentially the same for all of them. The nature of HOC multiplies isolated instances of your components by 2-3 times.
-
-What if we could generate result theme for a given ownTheme and injectTheme only once and then just reuse it in all similar components?
-And now we can.
-
 **@css-modules-theme** is a project based on two simple ideas:
 
-* First, themes composition must be fast. That means, no spawning class instance on each composition, no fancy multistep map/reduces or third-party helpers, just a few straightforward classic JS loops with minimum transformations. 
+* First, themes composition must be fast. That means, no producing class instance on each composition, [no hocs](#other-libraries), no fancy multistep map/reduces or third-party helpers, just a few straightforward classic JS loops with minimum transformations. 
 
 * Second, result of that composition should be weakly cached for given parameters and shared between different calls. If we render component that renders another themeable component many times, in vast majority of cases parent component will pass the same theme object to the child, thus result theme can be composed only once, cached and reused by other components from that cache.
-To achieve that @css-modules-theme puts injectTheme as a key into WeakMap (to free up memory when injectTheme is not needed anymore) and composed theme along with options into value of that map. 
-So when you call getTheme for the first time, it will do the composition and put the result into cache, and all consequent calls with the same arguments will just return the same result from that cache.
-From the table example mentioned above, the new table implementation with **css-modules-theme** was able to reduce the number of compositions from 761 to 42 and total page rendering time (with all content) by **30%**.
+To achieve that @css-modules-theme puts injected theme as a key into WeakMap (to free up memory when injected theme is not needed anymore) and composed theme along with options into a value of that map. 
+So when you call composeTheme for the first time, it will do the composition and put the result into cache, and all consequent calls with the same arguments will just return the same result from that cache.
+From the table example mentioned in [Other Libraries](#other-libraries) section, the new table implementation with **css-modules-theme** was able to reduce the number of compositions from 761 to 42 and total page rendering time (with all content) by **30%**.
 
 Project includes two (for now) scoped packages: [@css-modules-theme/core](https://github.com/klimashkin/css-modules-theme/tree/master/packages/core) and [@css-modules-theme/react](https://github.com/klimashkin/css-modules-theme/tree/master/packages/react)
 
@@ -174,29 +166,30 @@ Project includes two (for now) scoped packages: [@css-modules-theme/core](https:
 * [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
 * cdn: Exposed as `cssModulesThemeCore`
-  * [Unpkg](https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
-  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@1.1.0/dist/core.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
 
 1.5kb module (890bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
-#### `getTheme(ownTheme, [injectTheme], [options])`
-Function that returns a new theme as a result of composition of two given themes. Takes following arguments
+#### `composeTheme([options])`
+Function that returns a new theme as a result of composition of themes in array of options. Takes following arguments
 
- - `ownTheme` *(Object)* - First CSS modules object, used as a default (origin) theme for composition
- - [`injectTheme`] *(Object)* - Second CSS modules object, that is merged into the `ownTheme`. If omitted `getTheme` simply returns `ownTheme`
- - [`options`] *(Object)*
-   - [`compose = 'merge'`] *(String)* - Composition method
-	   - `'merge'` Default way that assigns classnames from injectTheme to ownTheme, and concatenate classnames if exists in both
-	   - `'assign'` Also assign classnames from injectTheme to ownTheme, like Object.assign, so if classname exists in both, injectTheme takes precedence
-	   - `'replace'` Just use injectTheme
-   - [`ownPrefix`] *(String)* - Prefix to filter and strip out properties in `ownTheme` that don't satisfy that prefix
-   - [`injectPrefix`] *(String)* - Prefix to filter and strip out properties in `injectPrefix` that don't satisfy that prefix
-   - [`noCache = false`] *(Boolean)* - In case you generate pretty big `injectTheme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
-
+ - `options` *(Object)* - option object, one per each theme, with following properties:
+   - `theme` *(Object)* - Theme object to compose with previous one.
+   - [`prefix`] *(String)* - Prefix to filter and strip out properties in current `theme` that don't satisfy that prefix, before composition.
+   - [`compose`] *(String)* - Method of composition of current `theme` with previous one (for second and following options). Available values are exported by [`Compose`](#compose). If `compose` in current oprions object is absent, it will be taken from the previous or default one.
+   - [`noCache = false`] *(Boolean)* - In case you generate current `theme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
+ 
+#### `Compose` enum
+Object that contains enum for available composition methods with following values:
+   - `Compose.Merge` - Default way that assigns classnames from current `theme` to previous one, and concatenate classnames which exist in both themes.
+   - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter (current) takes precedence
+   - `Compose.Replace` - Just use current theme
+	   
 #### Examples
 Assume we have Icon component with following theme:
 ```javascript
-const ownTheme = {
+const iconStyle = {
   'icon': 'x',
   'small': 'y',
   'medium': 'z'
@@ -204,7 +197,7 @@ const ownTheme = {
 ```
 and Button component which wants to render Icon component and pass following theme to it:
 ```javascript
-const injectTheme = {
+const buttonStyle = {
   'button': 'a',
   'primary': 'b',
   'secondary': 'c',
@@ -212,9 +205,9 @@ const injectTheme = {
   'icon-small': 'e'
 }
 ```
-Now let's compose them with different options and see the outcome:
+Now let's compose them using different options and see the outcome:
 ```javascript
-getTheme(ownTheme, injectTheme) =>
+composeTheme([{theme: iconStyle}, {theme: buttonStyle}]) =>
 {
   'icon': 'x',
   'small': 'y',
@@ -227,7 +220,7 @@ getTheme(ownTheme, injectTheme) =>
 }
 ```
 ```javascript
-getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-') =>
+composeTheme([{theme: iconStyle}, {theme: buttonStyle, prefix: 'icon-'}]) =>
 {
   'icon': 'x d',
   'small': 'y e',
@@ -235,7 +228,7 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-') =>
 }
 ```
 ```javascript
-getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'assign'}) =>
+composeTheme([{theme: iconStyle}, {theme: buttonStyle, prefix: 'icon-', compose: Compose.Assign}]) =>
 {
   'icon': 'd',
   'small': 'e',
@@ -243,50 +236,65 @@ getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'assign'}) =>
 }
 ```
 ```javascript
-getTheme(ownTheme, injectTheme, {injectPrefix: 'icon-', compose: 'replace'}) =>
+composeTheme([{theme: iconStyle}, {theme: buttonStyle, prefix: 'icon-', compose: Compose.Replace}]) =>
 {
   'icon': 'd',
   'small': 'e',
 }
 ```
+```javascript
+composeTheme([{theme: iconStyle, compose: Compose.Replace}, {theme: buttonStyle, prefix: 'icon-'}]) =>
+{
+  'icon': 'd',
+  'small': 'e',
+}
+```
+```javascript
+composeTheme([{theme: iconStyle, compose: Compose.Replace}, {theme: buttonStyle, prefix: 'icon-', compose: Compose.Assign}]) =>
+{
+  'icon': 'd',
+  'small': 'e',
+  'medium': 'z'
+}
+```
+
 ### @css-modules-theme/react
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
 * cdn: Exposed as `cssModulesThemeReact`
-  * [Unpkg](https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`
-  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/react@2.0.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@2.0.0/dist/react.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js"></script>`
 
+#### `composeThemeFromProps(ownTheme, propsOrContext, [options])`
 
-#### `getThemeFromProps(ownTheme, props, [options])`
-
-Helper module that makes call of `getTheme` easier in React components, so you can just pass props to this method and it will map theme specific props with getTheme arguments.
+Helper module that makes call of [composeTheme](#composeTheme-options) easier in React components, so you can just pass props/context to this method and it will map theme specific props with composeTheme arguments.
 
 *Parameters:*
 
- - `ownTheme` *(Object)* - First CSS modules object, used as a default (origin) theme for composition
- - `props` - Standard react props object with following properties:
-   - [`theme`] *(Object)* - Maps to `injectTheme` in `getTheme`
-   - [`themePrefix`] *(String)* - Maps to `injectPrefix` in `getTheme`
-   - [`themeCompose`] *(String)* - Maps to `compose` in `getTheme`
-   - [`themeNoCache`] *(Boolean)* - Maps to `noCache` in `getTheme`
- - [`options`] *(Object)*
-   - [`compose`] *(String)* - Default composition method for `getTheme` if there is no `props.themeCompose` passed
-   - [`ownPrefix`] *(String)* - Goes directly to `getTheme`
+ - `ownTheme` *(Object)* - First CSS modules object, used as an origin theme for composition
+ - `propsOrContext` *(Object|Array)* - Standard react props object or array of props and context objects with the following properties:
+   - [`theme`] *(Object)* - Maps to `theme` in `composeTheme`
+   - [`themePrefix`] *(String)* - Maps to `prefix` in `composeTheme`
+   - [`themeCompose`] *(String)* - Maps to `compose` in `composeTheme`
+   - [`themeNoCache`] *(Boolean)* - Maps to `noCache` in `composeTheme`
+ - [`options`] *(Object)* - options for `ownTheme`
+   - [`compose`] *(String)* - Default composition method for `composeTheme` if there is no `props.themeCompose` passed
+   - [`prefix`] *(String)* - Goes directly to `composeTheme`
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
 #### Examples
-Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method in Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use the prefix `icon-` in own CSS declaration: buttonStyles.css to concatenate the matching Icon classnames in iconStyles.css.
-As a result using `merge`, Button will render the bigger green Icon during the merge declaration by adding own classname to Icon's large selector definition.(e.g {large: "Icon_c Button_z"})
-We can call `getThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
+Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method of Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use prefix `icon-` in own Button.css to concatenate the matching Icon classnames in Icon.css.
+As a result of using `merge`, Button will render the bigger green Icon during the merge declaration by adding own classname to Icon's large selector definition.(e.g {large: "Icon_c Button_z"})
+We can call `composeThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
 ```css
-/** iconStyles.css **/
+/** Icon.css **/
 .icon { width: 20px; }
-.svg { color: red }
+.svg { color: red; }
 .large { width: 30px; }
 .small { width: 15px; }
 
-/** buttonStyles.css **/
+/** Button.css **/
 .button { width: 100px; }
 .large { width: 200px; }
 .small { width: 50px; }
@@ -294,20 +302,20 @@ We can call `getThemeFromProps` many times during the lifecycle of the component
 .icon-large { width: 40px; }
 ```
 ```javascript
-import {getThemeFromProps} from '@css-modules-theme/react';
+import {composeThemeFromProps} from '@css-modules-theme/react';
 import iconStyles from './Icon.css';
 import buttonStyles from './Button.css';
 
 class Icon extends Component {
   handleClick() {
-     // We can call getThemeFromProps(iconStyles, this.props) many times here, it will just return the same result from cache
-    const theme = getThemeFromProps(iconStyles, this.props);
+     // We can call composeThemeFromProps(iconStyles, this.props) many times here, it will just return the same result from cache
+    const theme = composeThemeFromProps(iconStyles, this.props);
     
     console.log(theme.icon)
   }
   
   render() {
-    const theme = getThemeFromProps(iconStyles, this.props, {compose: 'replace'});
+    const theme = composeThemeFromProps(iconStyles, this.props, {compose: 'replace'});
     
     /* In case of call from Button final theme object would look like
     theme = {
@@ -317,7 +325,6 @@ class Icon extends Component {
       small: "Icon_d",
     }
     */
-    
         
     return <div className={theme.icon} onClick={this.handleClick}>{this.props.icon}</div>;
   }
@@ -338,9 +345,9 @@ class Button extends Component {
 ---
 If we want to use composed `theme` in many lifecycle hooks or, for instance, in methods that can be called dozens of times quickly,
 like in react-motion, we can manually check for changing theme props and compose a state `theme` in `getDerivedStateFromProps`.
-By having a state theme, searching the cache in hot functions can be avoided.
+By keeping theme in state, searching through the cache in hot functions can be avoided.
 ```javascript
-import {getThemeFromProps} from '@css-modules-theme/react';
+import {composeThemeFromProps} from '@css-modules-theme/react';
 import styles from './styles.css';
 
 export default class extends Component {
@@ -353,7 +360,7 @@ export default class extends Component {
   
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.theme !== prevState.injectTheme) {
-      return {injectTheme: nextProps.theme, theme: getThemeFromProps(styles, nextProps)};
+      return {injectTheme: nextProps.theme, theme: composeThemeFromProps(styles, nextProps)};
     }
     
     return null;
@@ -384,7 +391,7 @@ What if your component just takes some properties from own `props` and pass all 
 render() {
   let {size, onClick, theme, themePrefix, themeCompose, themeNoCache, ...elementProps} = this.props;
   
-  theme = getThemeFromProps(styles, this.props);
+  theme = composeThemeFromProps(styles, this.props);
   elementProps.className = theme.main;
   
   ...
@@ -396,9 +403,9 @@ render() {
   );
 }
 ```
-So you need to list all possible `theme*` props that parent can specify for `getThemeFromProps`, to destructure them out because they are not valid for a child component. But what if `@css-modules-theme/react` will add more props in the future? It's pretty annoying to manually list them all.
+So you need to list all possible `theme*` props that parent can specify for `composeThemeFromProps`, to destructure them out because they are not valid for a child component. But what if `@css-modules-theme/react` will add more props in the future? It's pretty annoying to manually list them all.
 
-For that case `mixThemeWithProps` has been created. It's a simple wrapper on top of `getThemeFromProps` (and has exactly the same signature) that takes out all `theme*` props for you and mix composed `theme` in the result props object. So you can destructure only props you really need.
+For that case `mixThemeWithProps` has been created. It's a simple wrapper on top of `composeThemeFromProps` (and has exactly the same signature) that takes out all `theme*` props for you and mix composed `theme` in the result props object. So you can destructure only props you really need.
 ```javascript
 render() {
   const {size, onClick, theme, ...elementProps} = mixThemeWithProps(styles, this.props);
@@ -412,6 +419,15 @@ render() {
   );
 }
 ```
+
+## Other Libraries
+Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/FriendsOfReactJS/react-css-themr). It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
+Why "unfortunately"? We can implement a forwardRef support with a HOC but using HOC leads to significant performance degradation. Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab of DevTools noticing that the first render of your page takes hundreds of milliseconds.
+
+But let's step back and think for a second. What does HOC do? It creates component instance for each wrapped instance of your component and merge your style object with theme object from a parent component instance. If we have 2000 identical components with different content, it will do it 2000 times. Hm, that doesn't sound right, because result theme object will be essentially the same for all of them. The nature of HOC multiplies isolated instances of your components by 2-3 times.
+
+What if we could generate result theme for given two themes only once and then just reuse it in all similar components?
+And with `css-modules-theme` we can and we get it automatically.
 
 ## Bundling
 
@@ -431,7 +447,7 @@ Each of them has corresponding field in `package.json`:
   "es2018": "dist/name.es2018.js",
 ```
 
-If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@1.2.0/dist/react.umd.js"></script>`.
+If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@@2.0.0/dist/react.umd.js"></script>`.
 
 But if you, more likely, use bundlers to build your applications, like [webpack](https://github.com/webpack/webpack), then better choice would be to require corresponding module for a target that you need. If you compile your app bundle down to ES5, then webpack config can look like that
 ```javascript
@@ -453,4 +469,8 @@ mainFields: ['es2018', 'es2017', 'es2016', 'es2015', 'module', 'browser', 'main'
 ````
 You get the idea. You can compile your application into several bundles with different compilation levels and have different webpack configs for them with different set of `mainFields`, to give to the modern browsers almost pure non compiled code, that takes less space and have fewer transformations, which leads to better performance.
 
-## Other Libraries
+## Contribution
+
+You are always welcome to: create github issues, make fixes or improvements in code, types, tests.
+Clone project and run `npm install && npm run bootstrap` to start working.
+If you using IDE, like WebStorm, add `--build` option to the typescript setup.
