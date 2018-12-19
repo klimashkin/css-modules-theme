@@ -33,16 +33,16 @@ const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
 /**
  * Takes an array of objects, which contain themes and options, and returns a composed theme
  *
- * @param {Object[]} themes - React props object that will be searched for the following properties
- * @param {Object} [themes[].theme] - Theme object to compose
- * @param {string} [themes[].compose] - Method of composition of current theme with previous one
- * @param {string} [themes[].prefix] - Prefix to filter out properties in current theme before composition
- * @param {boolean} [themes[].noCache=false] - Whether composed theme should not be cached for specified params.
+ * @param {Object[]} options
+ * @param {Object} [options[].theme] - Theme object to compose
+ * @param {string} [options[].compose] - Method of composition of current theme with previous one
+ * @param {string} [options[].prefix] - Prefix to filter out properties in current theme before composition
+ * @param {boolean} [options[].noCache=false] - Whether composed theme should not be cached for specified params.
  *
  * @returns {Object}
  */
-const composeTheme = (themes: ThemeOptions[]): Theme => {
-  const first = themes[0];
+const composeTheme = (options: ThemeOptions[]): Theme => {
+  const first = options[0];
   let cacheCheck = !first.noCache;
   let composeMethod = first.compose || Compose.Merge;
   let resultTheme: Theme;
@@ -53,8 +53,8 @@ const composeTheme = (themes: ThemeOptions[]): Theme => {
     resultTheme = first.theme;
   }
 
-  for (let i = 1; i < themes.length; i++) {
-    const {theme, prefix, compose, noCache = false} = themes[i];
+  for (let i = 1; i < options.length; i++) {
+    const {theme, prefix, compose, noCache = false} = options[i];
     let composedTheme;
 
     if (compose) {
