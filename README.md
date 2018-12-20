@@ -83,7 +83,8 @@ Have you noticed how we took the real classnames from `styles` object simply by 
 Moreover, in case of getting corresponding classname for the passed `type` property we can simply use brackets notation if possible type names are the same as given classnames in css. 
 That is superuseful - no ternaries, conditions or superfluous `cx({primary: type === 'primary', secondary: type === 'secondary'})` are needed, which is good for performance and reasoning.
 
-Example above illustrated us two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - composition.
+---
+Example above illustrates us two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - composition.
 Our Button component will always have some type, which means both `.button` and either `.primary` or `.secondary` classes will be applied. Currently we have to concatenate them in runtime on each render, but we can do better. Let's use `composes` keyword in our `Button.css`:
 ```css  
 .button {  
@@ -161,7 +162,7 @@ From the table example mentioned in [Other Libraries](#other-libraries) section,
 
 Project includes two (for now) scoped packages: [@css-modules-theme/core](https://github.com/klimashkin/css-modules-theme/tree/master/packages/core) and [@css-modules-theme/react](https://github.com/klimashkin/css-modules-theme/tree/master/packages/react)
 
-### @css-modules-theme/core
+## @css-modules-theme/core
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
@@ -186,7 +187,7 @@ Object that contains enum for available composition methods with following value
    - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter (current) takes precedence
    - `Compose.Replace` - Just use current theme
 	   
-#### Examples
+### Examples
 Assume we have Icon component with following theme:
 ```javascript
 const iconStyle = {
@@ -258,7 +259,7 @@ composeTheme([{theme: iconStyle, compose: Compose.Replace}, {theme: buttonStyle,
 }
 ```
 
-### @css-modules-theme/react
+## @css-modules-theme/react
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
@@ -283,7 +284,7 @@ Helper module that makes call of [composeTheme](#composeTheme-options) easier in
    - [`prefix`] *(String)* - Goes directly to `composeTheme`
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
 
-#### Examples
+### Examples
 Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method of Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use prefix `icon-` in own Button.css to concatenate the matching Icon classnames in Icon.css.
 As a result of using `merge`, Button will render the bigger green Icon during the merge declaration by adding own classname to Icon's large selector definition.(e.g {large: "Icon_c Button_z"})
 We can call `composeThemeFromProps` many times during the lifecycle of the component (we call it in `handleClick` sometime after `render`), result will always be taken from cache as long as `props.theme*` are the same
