@@ -169,7 +169,7 @@ Project includes two (for now) scoped packages: [@css-modules-theme/core](https:
   * [Unpkg](https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
   * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
 
-1.5kb module (890bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
+1.8kb module (960bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
 #### `composeTheme([options])`
 Function that returns a new theme as a result of composition of themes in array of options. Takes following arguments
