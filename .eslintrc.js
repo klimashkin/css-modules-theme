@@ -220,6 +220,8 @@ module.exports = {
     'no-unused-labels': 2,
     // disallow unnecessary .call() and .apply()
     'no-useless-call': 0,
+    // disallow unnecessary catch clauses
+    'no-useless-catch': 2,
     // Disallow unnecessary escape usage
     'no-useless-escape': 2,
     // Disallow redundant return statements
