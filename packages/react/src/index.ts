@@ -6,8 +6,9 @@ export {Theme, Prefix};
 export interface ThemeProps {
   theme?: Theme;
   themePrefix?: Prefix;
-  themeNoCache?: boolean;
   themeCompose?: Compose;
+  themeNoCache?: boolean;
+  themeNoParseComposes?: boolean;
 }
 
 export interface ComposeOptions {
@@ -15,6 +16,7 @@ export interface ComposeOptions {
   prefix?: Prefix;
   compose?: Compose;
   noCache?: boolean;
+  noParseComposes?: boolean;
 }
 
 /**
@@ -52,8 +54,9 @@ export const composeThemeFromProps = <T extends ThemeProps>(
   const themes = [{
     theme: ownTheme,
     prefix: options.prefix,
-    noCache: options.noCache,
     compose: options.compose,
+    noCache: options.noCache,
+    noParseComposes: options.noParseComposes,
   }];
 
   if (Array.isArray(propsOrContext)) {
@@ -62,8 +65,9 @@ export const composeThemeFromProps = <T extends ThemeProps>(
         themes.push({
           theme: item.theme,
           prefix: item.themePrefix,
-          noCache: item.themeNoCache,
           compose: item.themeCompose,
+          noCache: item.themeNoCache,
+          noParseComposes: item.themeNoParseComposes,
         });
       }
     }
@@ -71,8 +75,9 @@ export const composeThemeFromProps = <T extends ThemeProps>(
     themes.push({
       theme: propsOrContext.theme,
       prefix: propsOrContext.themePrefix,
-      noCache: propsOrContext.themeNoCache,
       compose: propsOrContext.themeCompose,
+      noCache: propsOrContext.themeNoCache,
+      noParseComposes: propsOrContext.themeNoParseComposes,
     });
   }
 
@@ -95,7 +100,7 @@ export const mixThemeWithProps = <T extends ThemeProps>(
 ) => {
   const props = options.props || (Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext);
   const {
-    themePrefix, themeCompose, themeNoCache, ...restProps
+    themePrefix, themeCompose, themeNoCache, themeNoParseComposes, ...restProps
   } = props;
 
   // @ts-ignore Ignore assigning to the same property until https://github.com/Microsoft/TypeScript/issues/28952

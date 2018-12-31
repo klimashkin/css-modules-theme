@@ -3,9 +3,9 @@ import {composeThemeFromProps, mixThemeWithProps, Compose} from '.';
 const themeIcon = {
   icon: 'Icon_icon',
   svg: 'Icon_svg',
-  small: 'Icon_small',
-  medium: 'Icon_medium',
-  large: 'Icon_large',
+  small: 'Icon_small Icon_icon',
+  medium: 'Icon_medium Icon_icon',
+  large: 'Icon_large Icon_icon',
 };
 const themeButton = {
   button: 'Button_button',
@@ -24,9 +24,9 @@ it('composeThemeFromProps should prefix and compose by merge from props', () => 
     .toStrictEqual({
       icon: 'Icon_icon Button_firstIcon-icon',
       svg: 'Icon_svg Button_firstIcon-svg',
-      small: 'Icon_small',
-      medium: 'Icon_medium',
-      large: 'Icon_large',
+      small: 'Icon_small Icon_icon Button_firstIcon-icon',
+      medium: 'Icon_medium Icon_icon Button_firstIcon-icon',
+      large: 'Icon_large Icon_icon Button_firstIcon-icon',
     });
 });
 
@@ -35,13 +35,13 @@ it('composeThemeFromProps should prefix and compose by assign from props', () =>
     .toStrictEqual({
       icon: 'Button_firstIcon-icon',
       svg: 'Button_firstIcon-svg',
-      small: 'Icon_small',
-      medium: 'Icon_medium',
-      large: 'Icon_large',
+      small: 'Icon_small Button_firstIcon-icon',
+      medium: 'Icon_medium Button_firstIcon-icon',
+      large: 'Icon_large Button_firstIcon-icon',
     });
 });
 
-it('composeThemeFromProps should prefix and compose by assign from props', () => {
+it('composeThemeFromProps should prefix and compose by replace from props', () => {
   expect(composeThemeFromProps(themeIcon, {theme: {...themeButton}, themePrefix: 'firstIcon-', themeCompose: Compose.Replace}))
     .toStrictEqual({
       icon: 'Button_firstIcon-icon',
@@ -49,7 +49,7 @@ it('composeThemeFromProps should prefix and compose by assign from props', () =>
     });
 });
 
-it('composeThemeFromProps should prefix and compose by assign from props', () => {
+it('composeThemeFromProps should prefix and compose by replace from props', () => {
   expect(composeThemeFromProps(themeIcon, [{theme: {...themeButton}, themePrefix: 'firstIcon-', themeCompose: Compose.Replace}]))
     .toStrictEqual({
       icon: 'Button_firstIcon-icon',
@@ -61,24 +61,26 @@ it('mixThemeWithProps should return prefixed and composed theme', () => {
   const {
     theme,
     // @ts-ignore Test that theme* props really do not exist
-    themePrefix, themeCompose, themeNoCache,
+    themePrefix, themeCompose, themeNoCache, themeNoParseComposes,
     ...restProps
   } = mixThemeWithProps(themeIcon, {
     prop: 'SomePropValue',
-    theme: {...themeButton}, themePrefix: 'firstIcon-', themeCompose: Compose.Merge,
+    theme: {...themeButton}, themePrefix: 'firstIcon-',
+    themeCompose: Compose.Merge, themeNoCache: true, themeNoParseComposes: true,
   });
 
   expect(theme).toStrictEqual({
     icon: 'Icon_icon Button_firstIcon-icon',
     svg: 'Icon_svg Button_firstIcon-svg',
-    small: 'Icon_small',
-    medium: 'Icon_medium',
-    large: 'Icon_large',
+    small: 'Icon_small Icon_icon',
+    medium: 'Icon_medium Icon_icon',
+    large: 'Icon_large Icon_icon',
   });
   expect(restProps).toStrictEqual({prop: 'SomePropValue'});
   expect(themePrefix).not.toBeDefined();
   expect(themeCompose).not.toBeDefined();
   expect(themeNoCache).not.toBeDefined();
+  expect(themeNoParseComposes).not.toBeDefined();
 });
 
 it('mixThemeWithProps with context and option props', () => {
@@ -102,9 +104,9 @@ it('mixThemeWithProps with context and option props', () => {
   expect(theme).toStrictEqual({
     icon: 'Icon_icon Context_icon Button_firstIcon-icon',
     svg: 'Icon_svg Context_svg Button_firstIcon-svg',
-    small: 'Icon_small',
-    medium: 'Icon_medium',
-    large: 'Icon_large',
+    small: 'Icon_small Icon_icon Context_icon Button_firstIcon-icon',
+    medium: 'Icon_medium Icon_icon Context_icon Button_firstIcon-icon',
+    large: 'Icon_large Icon_icon Context_icon Button_firstIcon-icon',
   });
   expect(restProps).toStrictEqual({id: 'SomePropValue'});
   expect(themePrefix).not.toBeDefined();

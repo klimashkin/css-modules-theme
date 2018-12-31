@@ -1,11 +1,14 @@
 import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
+import getThemeCompositionDependencies from './utils/getThemeCompositionDependencies';
 import {
+  Theme, ThemeOptions, Prefix,
   Compose, ComposedThemesCacheItem, ComposedThemesCacheMap,
-  PrefixedThemesCacheMap, ThemeOptions, Theme, Prefix,
+  PrefixedThemesCacheMap, ThemeDependenciesCacheMap,
 } from './types';
 
 const composedThemesCacheMap: ComposedThemesCacheMap = new WeakMap();
 const prefixedThemesCacheMap: PrefixedThemesCacheMap = new WeakMap();
+const dependenciesCacheMap: ThemeDependenciesCacheMap = new WeakMap();
 
 /**
  * Filter theme object with a given prefix and cache the result which will be used on subsequent calls with the same params
@@ -31,6 +34,24 @@ const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
 };
 
 /**
+ * Search theme object for a class composition and cache the result which will be used on subsequent calls with the same params
+ * See {@link getThemeCompositionDependencies} for parameters list
+ */
+const getCachedThemeCompositionDependencies = (theme: Theme) => {
+  let dependencies = dependenciesCacheMap.get(theme);
+
+  if (dependencies === undefined) {
+    dependencies = getThemeCompositionDependencies(theme);
+
+    if (dependencies !== undefined) {
+      dependenciesCacheMap.set(theme, dependencies);
+    }
+  }
+
+  return dependencies;
+};
+
+/**
  * Takes an array of objects, which contain themes and options, and returns a composed theme
  *
  * @param {Object[]} options
@@ -43,39 +64,41 @@ const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
  */
 const composeTheme = (options: ThemeOptions[]): Theme => {
   const first = options[0];
-  let cacheCheck = !first.noCache;
+  let checkCache = first.noCache !== true;
   let composeMethod = first.compose || Compose.Merge;
   let resultTheme: Theme;
+  let dependencies;
 
-  if (first.prefix) {
+  if (typeof first.prefix === 'string' && first.prefix.length > 0) {
     resultTheme = getCachedPrefixedTheme(first.theme, first.prefix);
   } else {
     resultTheme = first.theme;
   }
 
   for (let i = 1; i < options.length; i++) {
-    const {theme, prefix, compose, noCache = false} = options[i];
-    let composedTheme;
+    const {theme, prefix, compose, noParseComposes, noCache = false} = options[i];
+    const parseComposes = typeof noParseComposes === 'boolean' ? noParseComposes === false : first.noParseComposes !== true;
 
     if (compose) {
       composeMethod = compose;
     }
 
-    if (noCache && cacheCheck) {
-      cacheCheck = false;
+    if (noCache && checkCache) {
+      checkCache = false;
     }
 
     let composedCachedItem;
 
-    if (cacheCheck && composeMethod !== Compose.Replace) {
+    if (checkCache && composeMethod !== Compose.Replace) {
       let composedThemesCache = composedThemesCacheMap.get(theme);
 
       if (composedThemesCache === undefined) {
         composedThemesCache = [];
         composedThemesCacheMap.set(theme, composedThemesCache);
       } else {
-        composedCachedItem = composedThemesCache.find(
-          item => item.againstTheme === resultTheme && item.prefix === prefix && item.composeMethod === composeMethod
+        composedCachedItem = composedThemesCache.find(item =>
+          item.againstTheme === resultTheme && item.prefix === prefix &&
+          item.composeMethod === composeMethod && item.parseComposes === parseComposes
         );
 
         if (composedCachedItem !== undefined) {
@@ -84,10 +107,12 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
         }
       }
 
-      composedCachedItem = {againstTheme: resultTheme, prefix, composeMethod} as ComposedThemesCacheItem;
+      composedCachedItem = {againstTheme: resultTheme, prefix, composeMethod, parseComposes} as ComposedThemesCacheItem;
 
       composedThemesCache.push(composedCachedItem);
     }
+
+    let composedTheme;
 
     if (typeof prefix === 'string' && prefix.length > 0) {
       composedTheme = (noCache ? filterThemeWithPrefix : getCachedPrefixedTheme)(theme, prefix);
@@ -97,25 +122,69 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
 
     if (composeMethod === Compose.Replace) {
       resultTheme = composedTheme;
+
+      if (parseComposes && i < options.length - 1) {
+        dependencies = checkCache ? getCachedThemeCompositionDependencies(resultTheme) : getThemeCompositionDependencies(resultTheme);
+      }
+
       continue;
     }
 
+    // Get composition dependensies ('composes') of the first theme only when it's needed by the second one
+    if (i === 1 && noParseComposes !== true) {
+      dependencies = checkCache ? getCachedThemeCompositionDependencies(first.theme) : getThemeCompositionDependencies(first.theme);
+    }
+
     if (composeMethod === Compose.Merge) {
-      composedTheme = {...composedTheme};
+      const composedThemeOriginal = composedTheme;
 
-      for (const key in resultTheme) {
-        if (resultTheme.hasOwnProperty(key)) {
-          const composedThemeValue = composedTheme[key];
+      composedTheme = {...resultTheme};
 
-          if (composedThemeValue === undefined) {
-            composedTheme[key] = resultTheme[key];
-          } else {
-            composedTheme[key] = `${resultTheme[key]} ${composedThemeValue}`;
+      for (const key in composedThemeOriginal) {
+        if (composedThemeOriginal.hasOwnProperty(key)) {
+          const targetClasses = composedTheme[key];
+          let composingClasses = composedThemeOriginal[key];
+
+          if (targetClasses !== undefined) {
+            composingClasses = `${targetClasses} ${composingClasses}`;
+
+            // Check if other classes depend on this one, and update them as well
+            if (parseComposes === true && dependencies !== undefined && dependencies[key] !== undefined) {
+              for (const otherKey of dependencies[key]) {
+                // Don't need to check for hasOwnProperty since we create dependencies with Object.create(null)
+                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClasses, composingClasses);
+              }
+            }
           }
+
+          composedTheme[key] = composingClasses;
         }
       }
     } else if (composeMethod === Compose.Assign) {
-      composedTheme = {...resultTheme, ...composedTheme};
+      if (dependencies === undefined || parseComposes === false) {
+        composedTheme = {...resultTheme, ...composedTheme};
+      } else {
+        const composedThemeOriginal = composedTheme;
+
+        composedTheme = {...resultTheme};
+
+        for (const key in composedThemeOriginal) {
+          if (composedThemeOriginal.hasOwnProperty(key)) {
+            const targetClasses = composedTheme[key];
+            const composingClasses = composedThemeOriginal[key];
+
+            // Check if other classes depend on this one, and update them as well
+            if (dependencies[key] !== undefined) {
+              for (const otherKey of dependencies[key]) {
+                // Don't need to check for hasOwnProperty since we create dependencies with Object.create(null)
+                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClasses, composingClasses);
+              }
+            }
+
+            composedTheme[key] = composingClasses;
+          }
+        }
+      }
     }
 
     if (composedCachedItem !== undefined) {
@@ -128,4 +197,7 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
   return resultTheme;
 };
 
-export {Compose, composeTheme, getCachedPrefixedTheme};
+export {
+  Compose, composeTheme, filterThemeWithPrefix, getThemeCompositionDependencies,
+  getCachedPrefixedTheme, getCachedThemeCompositionDependencies,
+};

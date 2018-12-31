@@ -6,12 +6,13 @@
 
 - [CSS Modules](#css-modules)
 - [Theming](#theming)
-- [@css-modules-theme/core](#css-modules-themecore)
-  * [composeTheme](#composethemeoptions)
-  * [Compose enum](#compose-enum)
-- [@css-modules-theme/react](#css-modules-themereact)
-  * [composeThemeFromProps](#composethemefrompropsowntheme-propsOrContext-options)
-  * [mixThemeWithProps](#mixthemewithprops)
+- [Packages](#packages)
+  - [Core](#core)
+    * [composeTheme()](#composethemeoptions)
+    * [Composition types](#composition-types)
+  - [React](#react)
+    * [composeThemeFromProps()](#composethemefrompropsowntheme-propsOrContext-options)
+    * [mixThemeWithProps()](#mixthemewithprops)
 - [Other Libraries](#other-libraries)
 - [Bundling](#bundling)
 - [Contribution](#contribution)
@@ -84,7 +85,7 @@ Moreover, in case of getting corresponding classname for the passed `type` prope
 That is superuseful - no ternaries, conditions or superfluous `cx({primary: type === 'primary', secondary: type === 'secondary'})` are needed, which is good for performance and reasoning.
 
 ---
-Example above illustrates us two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - composition.
+Example above illustrates two first concepts of CSS Modules - local scope and build time transformation. Let's illustrate third one - [composition](https://github.com/css-modules/css-modules#composition).
 Our Button component will always have some type, which means both `.button` and either `.primary` or `.secondary` classes will be applied. Currently we have to concatenate them in runtime on each render, but we can do better. Let's use `composes` keyword in our `Button.css`:
 ```css  
 .button {  
@@ -162,7 +163,8 @@ From the table example mentioned in [Other Libraries](#other-libraries) section,
 
 Project includes two (for now) scoped packages: [@css-modules-theme/core](https://github.com/klimashkin/css-modules-theme/tree/master/packages/core) and [@css-modules-theme/react](https://github.com/klimashkin/css-modules-theme/tree/master/packages/react)
 
-## @css-modules-theme/core
+## Core
+Main package that performs all types of composition and which is used by other packages.
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
@@ -180,15 +182,16 @@ Function that returns a new theme as a result of composition of themes in array 
    - [`prefix`] *(String)* - Prefix to filter and strip out properties in current `theme` that don't satisfy that prefix, before composition.
    - [`compose`] *(String)* - Method of composition of current `theme` with previous one (for second and following options). Available values are exported by [`Compose`](#compose). If `compose` in current oprions object is absent, it will be taken from the previous or default one.
    - [`noCache = false`] *(Boolean)* - In case you generate current `theme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
+   - [`noParseComposes = false`] *(Boolean)* - `composeTheme` will try to detect [`composes`](https://github.com/css-modules/css-modules#composition) rules in css. Set it to `false` if you don't use `composes` and want to safe some cpu
  
-#### `Compose` enum
-Object that contains enum for available composition methods with following values:
-   - `Compose.Merge` - Default way that assigns classnames from current `theme` to previous one, and concatenate classnames which exist in both themes.
-   - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter (current) takes precedence
+#### Composition types
+`Compose` object that exposes available composition methods with following values:
+   - `Compose.Merge` - Default way that assigns classnames from current `theme` to the previous one, and concatenate classnames which exist in both themes.
+   - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter takes precedence
    - `Compose.Replace` - Just use current theme
 	   
 ### Examples
-Assume we have Icon component with following theme:
+Assume we have an Icon component with following theme:
 ```javascript
 const iconStyle = {
   'icon': 'x',
@@ -196,7 +199,7 @@ const iconStyle = {
   'medium': 'z'
 }
 ```
-and Button component which wants to render Icon component and pass following theme to it:
+and a Button component which wants to render Icon component and pass following theme to it:
 ```javascript
 const buttonStyle = {
   'button': 'a',
@@ -259,7 +262,8 @@ composeTheme([{theme: iconStyle, compose: Compose.Replace}, {theme: buttonStyle,
 }
 ```
 
-## @css-modules-theme/react
+## React
+Package that makes calling [composeTheme](#composeTheme-options) easier in React components, so you can just pass props/context to the methods below and they will map theme specific props with [composeTheme](#composeTheme-options) arguments.
 
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
@@ -269,8 +273,6 @@ composeTheme([{theme: iconStyle, compose: Compose.Replace}, {theme: buttonStyle,
 
 #### `composeThemeFromProps(ownTheme, propsOrContext, [options])`
 
-Helper module that makes call of [composeTheme](#composeTheme-options) easier in React components, so you can just pass props/context to this method and it will map theme specific props with composeTheme arguments.
-
 *Parameters:*
 
  - `ownTheme` *(Object)* - First CSS modules object, used as an origin theme for composition
@@ -279,10 +281,12 @@ Helper module that makes call of [composeTheme](#composeTheme-options) easier in
    - [`themePrefix`] *(String)* - Maps to `prefix` in `composeTheme`
    - [`themeCompose`] *(String)* - Maps to `compose` in `composeTheme`
    - [`themeNoCache`] *(Boolean)* - Maps to `noCache` in `composeTheme`
+   - [`themeNoParseComposes`] *(Boolean)* - Maps to `noParseComposes` in `composeTheme`
  - [`options`] *(Object)* - options for `ownTheme`
    - [`compose`] *(String)* - Default composition method for `composeTheme` if there is no `props.themeCompose` passed
    - [`prefix`] *(String)* - Goes directly to `composeTheme`
    - [`noCache = false`] *(Boolean)* - Default `noCache` flag if there is no `props.themeNoCache` passed.
+   - [`noParseComposes = false`] *(Boolean)* - Default `noParseComposes` flag if there is no `props.themeNoParseComposes` passed.
 
 ### Examples
 Assume we have a themeable Icon component. Default composition for it is `replace` declared in the render method of Icon component, but Button overrides it with `merge` declared as themeCompose='merge' in Button component. Button will use prefix `icon-` in own Button.css to concatenate the matching Icon classnames in Icon.css.

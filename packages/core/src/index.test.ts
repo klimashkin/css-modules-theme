@@ -1,4 +1,4 @@
-import {Compose, composeTheme} from './index';
+import {Compose, composeTheme, getCachedThemeCompositionDependencies} from './index';
 import * as types from './types';
 
 describe('Single theme', () => {
@@ -282,5 +282,122 @@ describe('Two themes', () => {
         {theme: themeIcon}, {theme: themeButton, prefix: 'firstIcon-', compose: Compose.Replace, noCache: true},
       ])).not.toBe(theme);
     }
+  });
+});
+
+
+describe('With composition', () => {
+  it('should not return dependencies since there is not composition', () => {
+    expect(getCachedThemeCompositionDependencies({
+      one: 'a',
+      two: 'b',
+      three: 'c',
+      four: 'd',
+      five: 'e',
+    })).toBeUndefined();
+  });
+
+  /**
+   * .one {...} // .a
+   * .two {composes: one; ...} // .b
+   * .three {composes: one; ...} // .c
+   * .four {composes: two; ...} // .d
+   * .five {composes: three; ...} // .e
+   */
+  const theme: types.Theme = {
+    one: 'a',
+    two: 'b a',
+    three: 'c a',
+    four: 'd b a',
+    five: 'e c a',
+  };
+
+  it('should return dependencies', () => {
+    const dependencies = getCachedThemeCompositionDependencies(theme);
+
+    expect(dependencies && dependencies.prototype).toBeUndefined();
+    expect(dependencies).toEqual({
+      one: ['two', 'three', 'four', 'five'],
+      two: ['four'],
+      three: ['five'],
+    });
+  });
+
+  it('should return dependencies from cache on consequent calls', () => {
+    expect(getCachedThemeCompositionDependencies(theme)).toBe(getCachedThemeCompositionDependencies(theme));
+  });
+
+  /**
+   * .icon {...} // .Icon_icon
+   * .small {composes: icon; ...} // .Icon_small
+   * .medium {composes: icon; ...} // .Icon_medium
+   * .svg {...} // .Icon_svg
+   */
+  const themeIcon: types.Theme = {
+    icon: 'Icon_icon',
+    small: 'Icon_small Icon_icon',
+    medium: 'Icon_medium Icon_icon',
+    svg: 'Icon_svg',
+  };
+
+  /**
+   * .button {...} // .Button_button
+   * .primary {composes: button; ...} // .Button_primary
+   * .secondary {composes: button; ...} // .Button_secondary
+   * .text {...} // .Button_text
+   * .color {...} // .Button_color
+   * .size {...} // .Button_size
+   * .success-icon {composes: color; ...} // .Button_success-icon
+   * .success-svg {composes: size; ...} // .Button_success-svg
+   */
+  const themeButton: types.Theme = {
+    button: 'Button_button',
+    primary: 'Button_primary Button_button',
+    secondary: 'Button_secondary Button_button',
+    text: 'Button_text',
+    color: 'Button_color',
+    size: 'Button_size',
+    'success-icon': 'Button_success-icon Button_color',
+    'success-svg': 'Button_success-svg Button_size',
+  };
+
+  it('should return theme composed of two without taking care of composes', () => {
+    expect(composeTheme([{theme: themeIcon, noParseComposes: true}, {theme: themeButton, prefix: 'success-'}])).toStrictEqual({
+      icon: 'Icon_icon Button_success-icon Button_color',
+      small: 'Icon_small Icon_icon',
+      medium: 'Icon_medium Icon_icon',
+      svg: 'Icon_svg Button_success-svg Button_size',
+    });
+    expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'success-', noParseComposes: true}])).toStrictEqual({
+      icon: 'Icon_icon Button_success-icon Button_color',
+      small: 'Icon_small Icon_icon',
+      medium: 'Icon_medium Icon_icon',
+      svg: 'Icon_svg Button_success-svg Button_size',
+    });
+  });
+
+  it('should return theme composed of two', () => {
+    const theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'success-'}]);
+
+    expect(theme).toStrictEqual({
+      icon: 'Icon_icon Button_success-icon Button_color',
+      small: 'Icon_small Icon_icon Button_success-icon Button_color',
+      medium: 'Icon_medium Icon_icon Button_success-icon Button_color',
+      svg: 'Icon_svg Button_success-svg Button_size',
+    });
+    expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'success-'}])).toBe(theme);
+  });
+
+
+  it('should return theme composed of two with assign', () => {
+    const theme = composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'success-', compose: Compose.Assign}]);
+
+    expect(theme).toStrictEqual({
+      icon: 'Button_success-icon Button_color',
+      small: 'Icon_small Button_success-icon Button_color',
+      medium: 'Icon_medium Button_success-icon Button_color',
+      svg: 'Button_success-svg Button_size',
+    });
+    expect(composeTheme([{theme: themeIcon}, {theme: themeButton, prefix: 'success-', compose: Compose.Assign}])).toBe(theme);
   });
 });
