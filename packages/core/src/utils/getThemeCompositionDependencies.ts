@@ -29,18 +29,17 @@ export default function getThemeCompositionDependencies(theme: Theme): ThemeDepe
   // for..in plus indexOf is still the fastest way to filter object
   for (const key in theme) {
     if (theme.hasOwnProperty(key)) {
-      const classes = theme[key];
-      const dependantProps = [];
+      const search = ` ${theme[key]} `;
 
       for (const anotherKey in theme) {
-        if (theme.hasOwnProperty(anotherKey) && anotherKey !== key && theme[anotherKey].includes(classes)) {
-          dependantProps.push(anotherKey);
+        if (theme.hasOwnProperty(anotherKey) && anotherKey !== key && (theme[anotherKey] + ' ').indexOf(search) !== -1) {
+          if (result[key] === undefined) {
+            dependenciesExist = true;
+            result[key] = [anotherKey];
+          } else {
+            result[key].push(anotherKey);
+          }
         }
-      }
-
-      if (dependantProps.length > 0) {
-        dependenciesExist = true;
-        result[key] = dependantProps as [string];
       }
     }
   }
