@@ -6,7 +6,7 @@
 
 - [CSS Modules](#css-modules)
 - [Theming](#theming)
-- [Packages](#packages)
+- [Packages](#core)
   - [Core](#core)
     * [composeTheme()](#composethemeoptions)
     * [Composition types](#composition-types)
@@ -174,22 +174,26 @@ Main package that performs all types of composition and which is used by other p
 
 1.8kb module (960bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
-#### `composeTheme([options])`
-Function that returns a new theme as a result of composition of themes in array of options. Takes following arguments
+#### Composition types
+As `import {Compose} from '@css-modules-theme/core';`
 
- - `options` *(Object)* - option object, one per each theme, with following properties:
+`Compose` is an object (enum) that exposes available composition methods with following values:
+   - `Compose.Merge` - Default way that assigns classnames from current `theme` to the previous one, and concatenate classnames which exist in both themes.
+   - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter takes precedence
+   - `Compose.Replace` - Just use current theme
+
+#### `composeTheme([options])`
+As `import {composeTheme} from '@css-modules-theme/core';`
+
+Function that returns a new theme as a result of composition of themes in an array of options. Takes the following arguments
+
+ - `options` *(Object)* - option object, one per each theme, with the following properties:
    - `theme` *(Object)* - Theme object to compose with previous one.
    - [`prefix`] *(String)* - Prefix to filter and strip out properties in current `theme` that don't satisfy that prefix, before composition.
    - [`compose`] *(String)* - Method of composition of current `theme` with previous one (for second and following options). Available values are exported by [`Compose`](#compose). If `compose` in current oprions object is absent, it will be taken from the previous or default one.
    - [`noCache = false`] *(Boolean)* - In case you generate current `theme` dynamically (for instance, on each render), there is no reason to cache result, since there might be too many variation of outcome. In that case you can set `noCache` to `true` to skip putting result into cache and looking it up.
    - [`noParseComposes = false`] *(Boolean)* - `composeTheme` will try to detect [`composes`](https://github.com/css-modules/css-modules#composition) rules in css. Set it to `false` if you don't use `composes` and want to safe some cpu
- 
-#### Composition types
-`Compose` object that exposes available composition methods with following values:
-   - `Compose.Merge` - Default way that assigns classnames from current `theme` to the previous one, and concatenate classnames which exist in both themes.
-   - `Compose.Assign` - Also assigns classnames from curent `theme` to previous one, like Object.assign, so if classname exists in both, latter takes precedence
-   - `Compose.Replace` - Just use current theme
-	   
+
 ### Examples
 Assume we have an Icon component with following theme:
 ```javascript
@@ -272,6 +276,7 @@ Package that makes calling [composeTheme](#composeTheme-options) easier in React
   * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js"></script>`
 
 #### `composeThemeFromProps(ownTheme, propsOrContext, [options])`
+As `import {composeThemeFromProps} from '@css-modules-theme/react'`;
 
 *Parameters:*
 
@@ -390,6 +395,7 @@ export default class extends Component {
 ```
 
 #### `mixThemeWithProps`
+As `import {mixThemeWithProps} from '@css-modules-theme/react'`;
 
 What if your component just takes some properties from own `props` and pass all the rest down to another component as is. In that case you'd need to take all `theme*` props out, something like this:
 ```javascript
