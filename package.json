@@ -58,7 +58,8 @@
     "clean": "lerna exec -- rimraf dist",
     "rollup": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
     "lint": "eslint . --ext .js --ext .ts",
-    "prepublishOnly": "npm run lint && npm run clean && npm run types && npm run rollup && npm run test"
+    "release": "npm run lint && npm run clean && npm run types && npm run rollup && npm run test",
+    "prepublishOnly": "npm run test"
   },
   "husky": {
     "hooks": {
