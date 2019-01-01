@@ -8,8 +8,8 @@
 - [Theming](#theming)
 - [Packages](#core)
   - [Core](#core)
-    * [composeTheme()](#composethemeoptions)
     * [Composition types](#composition-types)
+    * [composeTheme()](#composethemeoptions)
   - [React](#react)
     * [composeThemeFromProps()](#composethemefrompropsowntheme-propsOrContext-options)
     * [mixThemeWithProps()](#mixthemewithprops)
@@ -169,10 +169,10 @@ Main package that performs all types of composition and which is used by other p
 * [npm](https://www.npmjs.com/package/@css-modules-theme/core): `npm install @css-modules-theme/core`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/core): `yarn add @css-modules-theme/core`
 * cdn: Exposed as `cssModulesThemeCore`
-  * [Unpkg](https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
-  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.0.0/dist/core.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/core@2.1.1/dist/core.umd.js): `<script src="https://unpkg.com/@css-modules-theme/core@2.1.1/dist/core.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.1.1/dist/core.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/core@2.1.1/dist/core.umd.js"></script>`
 
-1.8kb module (960bytes gzip) that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
+1.8kb module that represents pretty simple singleton which creates WeakMap for caching composed themes and exposes the following method
 
 #### Composition types
 As `import {Compose} from '@css-modules-theme/core';`
@@ -272,8 +272,8 @@ Package that makes calling [composeTheme](#composeTheme-options) easier in React
 * [npm](https://www.npmjs.com/package/@css-modules-theme/react): `npm install @css-modules-theme/react`
 * [yarn](https://yarnpkg.com/en/package/@css-modules-theme/react): `yarn add @css-modules-theme/react`
 * cdn: Exposed as `cssModulesThemeReact`
-  * [Unpkg](https://unpkg.com/@css-modules-theme/react@2.0.0/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@2.0.0/dist/react.umd.js"></script>`
-  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.0.0/dist/react.umd.js"></script>`
+  * [Unpkg](https://unpkg.com/@css-modules-theme/react@2.1.1/dist/react.umd.js): `<script src="https://unpkg.com/@css-modules-theme/react@2.1.1/dist/react.umd.js"></script>`
+  * [JSDelivr](https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.1.1/dist/react.umd.js): `<script src="https://cdn.jsdelivr.net/npm/@css-modules-theme/react@2.1.1/dist/react.umd.js"></script>`
 
 #### `composeThemeFromProps(ownTheme, propsOrContext, [options])`
 As `import {composeThemeFromProps} from '@css-modules-theme/react'`;
@@ -458,7 +458,7 @@ Each of them has corresponding field in `package.json`:
   "es2018": "dist/name.es2018.js",
 ```
 
-If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@@2.0.0/dist/react.umd.js"></script>`.
+If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@@2.1.1/dist/react.umd.js"></script>`.
 
 But if you, more likely, use bundlers to build your applications, like [webpack](https://github.com/webpack/webpack), then better choice would be to require corresponding module for a target that you need. If you compile your app bundle down to ES5, then webpack config can look like that
 ```javascript
