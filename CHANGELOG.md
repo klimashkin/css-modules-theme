@@ -1,7 +1,7 @@
 # Changelog
 
-## 2.1.1 (2018-12-31)
- * Properly handle classnames with the same beginning
+## 2.1.2 (2018-12-31)
+ * Properly handle classnames with the same beginning (2.1.1 was not publish correctly)
  
 ## 2.1.0 (2018-12-31)
  * Properly handle static `composes` css rule during runtime composition with `composeTheme`.
