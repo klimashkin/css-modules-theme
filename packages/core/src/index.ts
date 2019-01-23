@@ -2,7 +2,7 @@ import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
 import getThemeCompositionDependencies from './utils/getThemeCompositionDependencies';
 import {
   Theme, ThemeOptions, Prefix,
-  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap,
+  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap, // eslint-disable-line no-unused-vars
   PrefixedThemesCacheMap, ThemeDependenciesCacheMap,
 } from './types';
 
@@ -150,9 +150,11 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
 
             // Check if other classes depend on this one, and update them as well
             if (parseComposes === true && dependencies !== undefined && dependencies[key] !== undefined) {
+              const targetClassRegex = new RegExp(`\\b${targetClasses}\\b`);
+
               for (const otherKey of dependencies[key]) {
                 // Don't need to check for hasOwnProperty since we create dependencies with Object.create(null)
-                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClasses, composingClasses);
+                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClassRegex, composingClasses);
               }
             }
           }
@@ -175,9 +177,11 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
 
             // Check if other classes depend on this one, and update them as well
             if (dependencies[key] !== undefined) {
+              const targetClassRegex = new RegExp(`\\b${targetClasses}\\b`);
+
               for (const otherKey of dependencies[key]) {
                 // Don't need to check for hasOwnProperty since we create dependencies with Object.create(null)
-                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClasses, composingClasses);
+                composedTheme[otherKey] = composedTheme[otherKey].replace(targetClassRegex, composingClasses);
               }
             }
 

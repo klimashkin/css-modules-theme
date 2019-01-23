@@ -29,6 +29,7 @@ export default function getThemeCompositionDependencies(theme: Theme): ThemeDepe
   // for..in plus indexOf is still the fastest way to filter object
   for (const key in theme) {
     if (theme.hasOwnProperty(key)) {
+      // Don't use /\b${theme[key]}\b/ regex here, indexOf on string wrapped in spaces is much faster
       const search = ` ${theme[key]} `;
 
       for (const anotherKey in theme) {
