@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.3 (2019-0-23)
+ * Make sure dependency class names are replaced as a whole words, not as subsets of other classnames
+ * Update dependencies
+ * Update tests
+ 
 ## 2.1.2 (2018-12-31)
  * Properly handle classnames with the same beginning (2.1.1 was not publish correctly)
  
