@@ -5,7 +5,10 @@
     "lib": ["esnext"],
     "noEmit": false,
     "noEmitOnError": true,
+
     "composite": true,
+    "incremental": true,
+
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": true,
