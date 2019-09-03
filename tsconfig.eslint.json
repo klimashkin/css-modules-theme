@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.compiler.json",
+  "exclude": [
+    "packages/*/dist",
+    "node_modules"
+  ],
+  "include": [
+    "./packages/**/*test.ts"
+  ]
+}

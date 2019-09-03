@@ -26,7 +26,7 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
   } else if (spec === specs.ES2018) {
     result = {
       presets: [
-        ...getExtraPresets(specs.ES2015),
+        ...getExtraPresets(specs.ES2018),
       ],
       plugins: [
         // To make babel undersdand object-rest-spread syntax without transforming it

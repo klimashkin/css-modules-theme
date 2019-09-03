@@ -1,6 +1,37 @@
+const indentOptions = {
+  // Folowing numbers are multiplier of origin indent level (2 spaces in our case)
+  SwitchCase: 1, // Enforces indentation level for case clauses in switch statements
+  VariableDeclarator: 'first', // Enforces indentation level for variable declarators
+  outerIIFEBody: 1, // Enforces indentation level for file-level IIFEs
+  MemberExpression: 1, // Enforces indentation level for multi-line property chains
+  FunctionDeclaration: {
+    parameters: 'first', // Enforces indentation level for parameters in a function declaration
+    body: 1, // Enforces indentation level for the body of a function declaration
+  },
+  FunctionExpression: {
+    parameters: 'first', // Enforces indentation level for parameters in a function expression
+    body: 1, // Enforces indentation level for the body of a function expression
+  },
+  CallExpression: {
+    arguments: 1, // Enforces indentation level for arguments in a call expression
+  },
+  ArrayExpression: 1, // Enforces indentation level for elements in arrays
+  ObjectExpression: 1, // Enforces indentation level for elements in objects
+  ImportDeclaration: 1, // Enforces indentation level for import statements
+  flatTernaryExpressions: true, // Equires no indentation for ternary expressions which are nested in other ternary
+  ignoreComments: false,
+};
+const noExtraParensOptions = {
+  conditionalAssign: false,
+  returnAssign: false,
+  nestedBinaryExpressions: true, // No parens around (a && b)
+  enforceForArrowConditionals: true, // No parens around arrow return expression a => (a ? b : c)
+};
+const noUnusedVarsOptions = { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': true };
+const noUseBeforeDefineOptions = { functions: false, classes: true };
+
 module.exports = {
   'root': true,
-  'parser': 'typescript-eslint-parser',
 
   'env': {
     'amd': true,
@@ -11,14 +42,9 @@ module.exports = {
   },
 
   'parserOptions': {
-    'ecmaVersion': 2018,
+    'ecmaVersion': 2020,
     'sourceType': 'module',
-    'codeFrame': true, // Show the code frame in the reporter
   },
-
-  'plugins': [
-    'typescript',
-  ],
 
   'rules': {
     /** ES6 section http://eslint.org/docs/rules/#ecmascript-6 */
@@ -141,6 +167,8 @@ module.exports = {
     'no-div-regex': 2,
     // disallow else after a return in an if
     'no-else-return': [2, { 'allowElseIf': false }],
+    // disallow empty functions
+    'no-empty-function': [2, { allow: ['arrowFunctions'] }],
     // disallow Unnecessary Labels
     'no-extra-label': 2,
     // disallow comparisons to null without a type-checking operator
@@ -169,6 +197,8 @@ module.exports = {
     'no-labels': [2, { 'allowLoop': true, 'allowSwitch': false }],
     // disallow unnecessary nested blocks
     'no-lone-blocks': 0,
+    // disallow magic numbers
+    'no-magic-numbers': 0,
     // disallow creation of functions within loops
     'no-loop-func': 0,
     // disallow use of multiple spaces
@@ -232,6 +262,8 @@ module.exports = {
     'no-warning-comments': [0, { 'terms': ['todo', 'fixme', 'xxx'], 'location': 'start' }],
     // disallow use of the with statement
     'no-with': 2,
+    // enforce using named capture group in regular expression
+    'prefer-named-capture-group': 0,
     // require using Error objects as Promise rejection reasons
     'prefer-promise-reject-errors': 2,
     // require use of the second argument for parseInt()
@@ -271,9 +303,9 @@ module.exports = {
     // disallow use of undefined variable
     'no-undefined': 0,
     // disallow declaration of variables that are not used in the code
-    'no-unused-vars': [2, { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': true }],
+    'no-unused-vars': [2, noUnusedVarsOptions],
     // disallow use of variables before they are defined
-    'no-use-before-define': [2, { 'functions': false, 'classes': true }],
+    'no-use-before-define': [2, noUseBeforeDefineOptions],
 
 
     /** Possible Errors section http://eslint.org/docs/rules/#possible-errors **/
@@ -314,12 +346,7 @@ module.exports = {
     // disallow unnecessary parentheses.
     // if you are not sure about operator precedence, visit that page
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence#Table
-    'no-extra-parens': [2, 'all', {
-      'conditionalAssign': false,
-      'returnAssign': false,
-      'nestedBinaryExpressions': true, // No parens around (a && b)
-      'enforceForArrowConditionals': true, // No parens around arrow return expression a => (a ? b : c)
-    }],
+    'no-extra-parens': [2, 'all', noExtraParensOptions],
     // disallow unnecessary semicolons
     'no-extra-semi': 2,
     // disallow overwriting functions written as function declarations
@@ -392,35 +419,15 @@ module.exports = {
     'func-names': 0,
     // enforces use of function declarations or expressions
     'func-style': 0,
+    // enforce line breaks between arguments of a function call
+    'function-call-argument-newline': [0, 'consistent'],
     // enforce consistent line breaks inside function parentheses.
     // currently conflicts with max-len and if argument is a function with argument on first line
     'function-paren-newline': [0, 'multiline'],
     // enforces minimum and maximum identifier lengths (variable names, property names etc.)
     'id-length': 0,
     // enforce consistent indentation
-    'indent': [2, 2, {
-      // Folowing numbers are multiplier of origin indent level (2 spaces in our case)
-      'SwitchCase': 1, // Enforces indentation level for case clauses in switch statements
-      'VariableDeclarator': {'var': 2, 'let': 2, 'const': 3}, // Enforces indentation level for variable declarators
-      'outerIIFEBody': 1, // Enforces indentation level for file-level IIFEs
-      'MemberExpression': 1, // Enforces indentation level for multi-line property chains
-      'FunctionDeclaration': {
-        'parameters': 'first', // Enforces indentation level for parameters in a function declaration
-        'body': 1, // Enforces indentation level for the body of a function declaration
-      },
-      'FunctionExpression': {
-        'parameters': 'first', // Enforces indentation level for parameters in a function expression
-        'body': 1, // Enforces indentation level for the body of a function expression
-      },
-      'CallExpression': {
-        'arguments': 1, // Enforces indentation level for arguments in a call expression
-      },
-      'ArrayExpression': 1, // Enforces indentation level for elements in arrays
-      'ObjectExpression': 1, // Enforces indentation level for elements in objects
-      'ImportDeclaration': 1, // Enforces indentation level for import statements
-      'flatTernaryExpressions': true, // Equires no indentation for ternary expressions which are nested in other ternary
-      'ignoreComments': false,
-    }],
+    'indent': [2, 2, indentOptions],
     // enforces spacing between keys and values in object literal properties
     'key-spacing': [2, { 'beforeColon': false, 'afterColon': true }],
     // require a space before & after certain keywords
@@ -521,16 +528,7 @@ module.exports = {
     // disallow trailing whitespace at the end of lines
     'no-trailing-spaces': 2,
     // disallow dangling underscores in identifiers
-    'no-underscore-dangle': [2, { 'enforceInMethodNames': false, 'allow': [
-        '__DEV__',
-        '__STYLES_FETCH__',
-        '__LOG_TREE__',
-        '__LOG_ROUTER__',
-        '__LOG_ACTIONS__',
-        '__CHEK_VERSIONS_MATCH__',
-        '_loginHref_',
-        '_rootComponentInstance_',
-      ] }],
+    'no-underscore-dangle': [2, { 'enforceInMethodNames': false, 'allow': [] }],
     // disallow the use of Boolean literals in conditional expressions
     // also, prefer `a || b` over `a ? a : b`
     'no-unneeded-ternary': [2, { 'defaultAssignment': false }],
@@ -540,6 +538,8 @@ module.exports = {
     'nonblock-statement-body-position': [2, 'beside'],
     // enforce consistent line breaks inside braces
     'object-curly-newline': [2, { 'consistent': true }],
+    // Enforce using the eslint-plugin-babel
+    'object-curly-spacing': [0, 'never'],
     // enforce placing object properties on separate lines
     'object-property-newline': 0,
     // allow just one var statement per function
@@ -551,7 +551,7 @@ module.exports = {
     // enforce operators to be placed before or after line breaks
     'operator-linebreak': [2, 'after', {overrides: {'|>': 'before'}}],
     // enforce padding within blocks
-    'padded-blocks': [2, {'blocks': 'never', 'classes': 'never', 'switches': 'never'}],
+    'padded-blocks': [2, {'blocks': 'never', 'classes': 'never', 'switches': 'never'}, {allowSingleLineBlocks: false}],
     // require or disallow padding lines between statements
     'padding-line-between-statements': [2,
       // Always require blank lines after directive (like 'use-strict'), except between directives
@@ -613,56 +613,234 @@ module.exports = {
     'unicode-bom': [2, 'never'],
     // require regex literals to be wrapped in parentheses
     'wrap-regex': 0,
+  },
 
-    // Require that member overloads be consecutive
-    'typescript/adjacent-overload-signatures': 2,
-    // Require PascalCased class and interface names (class-name from TSLint)
-    'typescript/class-name-casing': 2,
-    // Require explicit return types on functions and class methods
-    'typescript/explicit-function-return-type': 0,
-    // Require explicit accessibility modifiers on class properties and methods (member-access from TSLint)
-    'typescript/explicit-member-accessibility': 0,
-    // Enforces naming of generic type variables
-    'typescript/generic-type-naming': 0,
-    // Require that interface names be prefixed with I (interface-name from TSLint)
-    'typescript/interface-name-prefix': [2, 'never'],
-    // Require a specific member delimiter style for interfaces and type literals
-    'typescript/member-delimiter-style': [2, {delimiter: 'semi', requireLast: true, ignoreSingleLine: true}],
-    // Enforces naming conventions for class members by visibility
-    'typescript/member-naming': 0,
-    // Require a consistent member declaration order (member-ordering from TSLint)
-    'typescript/member-ordering': 2,
-    // Enforces the use of as Type assertions instead of <Type> assertions (no-angle-bracket-type-assertion from TSLint)
-    'typescript/no-angle-bracket-type-assertion': 2,
-    // Disallow generic Array constructors
-    'typescript/no-array-constructor': 2,
-    // Disallow the declaration of empty interfaces (no-empty-interface from TSLint)
-    'typescript/no-empty-interface': 0,
-    // Disallow usage of the any type (no-any from TSLint)
-    'typescript/no-explicit-any': 2,
-    // Disallows explicit type declarations for variables or parameters initialized to a number, string, or boolean.
-    // (no-inferrable-types from TSLint)
-    'typescript/no-inferrable-types': 2,
-    // Disallow the use of custom TypeScript modules and namespaces
-    'typescript/no-namespace': 2,
-    // Disallows non-null assertions using the ! postfix operator (no-non-null-assertion from TSLint)
-    'typescript/no-non-null-assertion': 2,
-    // Disallow the use of parameter properties in class constructors. (no-parameter-properties from TSLint)
-    'typescript/no-parameter-properties': 0,
-    // Disallow /// <reference path="" /> comments (no-reference from TSLint)
-    'typescript/no-triple-slash-reference': 2,
-    // Disallow the use of type aliases (interface-over-type-literal from TSLint)
-    'typescript/no-type-alias': 0,
-    // Prevent TypeScript-specific constructs from being erroneously flagged as unused
-    'typescript/no-unused-vars': 2,
-    // Disallow the use of variables before they are defined
-    'typescript/no-use-before-define': 0,
-    // Disallows the use of require statements except in import statements (no-var-requires from TSLint)
-    'typescript/no-var-requires': 2,
-    // Require the use of the namespace keyword instead of the module keyword to declare custom TypeScript modules.
-    // (no-internal-module from TSLint)
-    'typescript/prefer-namespace-keyword': 0,
-    // Require consistent spacing around type annotations
-    'typescript/type-annotation-spacing': 2,
-  }
+  'overrides': [
+    {
+      'parser': '@typescript-eslint/parser',
+      'parserOptions': {
+        'tsconfigRootDir': './',
+        'project': [
+          './tsconfig.eslint.json',
+          './packages/*/tsconfig.json',
+        ],
+        'warnOnUnsupportedTypeScriptVersion': true,
+      },
+
+      'plugins': [
+        '@typescript-eslint',
+      ],
+
+      'files': ['*.ts'],
+
+      'rules': {
+        /** Disable ESLint rules, that are handled by the TypeScript */
+        // Checked by Typescript - ts(2378)
+        'getter-return': 0,
+        // Checked by Typescript - ts(2300)
+        'no-dupe-args': 0,
+        // Checked by Typescript - ts(1117)
+        'no-dupe-keys': 0,
+        // Checked by Typescript - ts(7027)
+        'no-unreachable': 0,
+        // Checked by Typescript - ts(2367)
+        'valid-typeof': 0,
+        // Checked by Typescript - ts(2588)
+        'no-const-assign': 0,
+        // Checked by Typescript - ts(2588)
+        'no-new-symbol': 0,
+        // Checked by Typescript - ts(2376)
+        'no-this-before-super': 0,
+        // This is checked by Typescript using the option `strictNullChecks`.
+        'no-undef': 0,
+        // This is already checked by Typescript.
+        'no-dupe-class-members': 0,
+        // This is already checked by Typescript.
+        'no-redeclare': 0,
+
+        /** Disable ESLint rules, that are handled by the @typescript-eslint */
+        // This is handled by @typescript-eslint/indent
+        'indent': 0,
+        // This is handled by @typescript-eslint/func-call-spacing
+        'func-call-spacing': 0,
+        // This is handled by @typescript-eslint/no-array-constructor
+        'no-array-constructor': 0,
+        // This is handled by @typescript-eslint/no-empty-function
+        'no-empty-function': 0,
+        // This is handled by @typescript-eslint/no-extra-parens
+        'no-extra-parens': 0,
+        // This is handled by @typescript-eslint/no-magic-numbers
+        'no-magic-numbers': 0,
+        // This is handled by @typescript-eslint/no-unused-vars
+        'no-unused-vars': 0,
+        // This is handled by @typescript-eslint/no-use-before-define
+        'no-use-before-define': 0,
+        // This is handled by @typescript-eslint/no-useless-constructor
+        'no-useless-constructor': 0,
+        // This is handled by @typescript-eslint/quotes
+        'quotes': 0,
+        // This is handled by @typescript-eslint/require-await
+        'require-await': 0,
+        // This is handled by @typescript-eslint/semi
+        'semi': 0,
+
+        /** @typescript-eslint rules */
+        // Require that member overloads be consecutive
+        '@typescript-eslint/adjacent-overload-signatures': 2,
+        // Requires using either T[] or Array<T> for arrays
+        '@typescript-eslint/array-type': [2, { default: 'array', readonly: 'array' }],
+        // Disallows awaiting a value that is not a Thenable
+        '@typescript-eslint/await-thenable': 0,
+        // Bans “// @ts-ignore” comments from being used
+        '@typescript-eslint/ban-ts-ignore': 0,
+        // Bans specific types from being used
+        '@typescript-eslint/ban-types': [2, {
+          'types': {
+            'Array': null,
+            'Object': 'Use {} instead',
+            'String': {
+              'message': 'Use string instead',
+              'fixWith': 'string'
+            }
+          }
+        }],
+        // Enforce camelCase naming convention
+        '@typescript-eslint/camelcase': [2, { properties: 'never', ignoreDestructuring: true, allow: [] }],
+        // Require PascalCased class and interface names
+        '@typescript-eslint/class-name-casing': [2, { allowUnderscorePrefix: false }],
+        // Enforces consistent usage of type assertions
+        '@typescript-eslint/consistent-type-assertions': [2, { assertionStyle: 'as', objectLiteralTypeAssertions: 'allow' }],
+        // Consistent with type definition either interface or type
+        '@typescript-eslint/consistent-type-definitions': [2, 'interface'],
+        // Require explicit return types on functions and class methods
+        '@typescript-eslint/explicit-function-return-type': [2, {
+          // if true, only functions which are part of a declaration will be checked
+          allowExpressions: false,
+          // if true, type annotations are also allowed on the variable of a function expression rather than on the function directly
+          allowTypedFunctionExpressions: true,
+          // if true, functions immediately returning another function expression will not be checked
+          allowHigherOrderFunctions: true,
+        }],
+        // Require explicit accessibility modifiers on class properties and methods
+        '@typescript-eslint/explicit-member-accessibility': [2, {
+          accessibility: 'no-public',
+          overrides: {}
+        }],
+        // Require or disallow spacing between function identifiers and their invocations
+        '@typescript-eslint/func-call-spacing': 2,
+        // Enforces naming conventions for class members by visibility
+        '@typescript-eslint/generic-type-naming': 0,
+        // Enforce consistent indentation
+        '@typescript-eslint/indent': [2, 2, indentOptions],
+        // Require that interface names should or should not prefixed with I
+        '@typescript-eslint/interface-name-prefix': [2, { prefixWithI: 'never' }],
+        // Require a specific member delimiter style for interfaces and type literals
+        '@typescript-eslint/member-delimiter-style': [2, {
+          multiline: { delimiter: 'semi', requireLast: true },
+          singleline: { delimiter: 'semi', requireLast: false },
+        }],
+        // Enforces naming conventions for class members by visibility
+        '@typescript-eslint/member-naming': 0,
+        // Require a consistent member declaration order
+        '@typescript-eslint/member-ordering': 0,
+        // Disallow generic Array constructors
+        '@typescript-eslint/no-array-constructor': 2,
+        // Disallow empty functions
+        '@typescript-eslint/no-empty-function': [2, { allow: ['arrowFunctions'] }],
+        // Disallow the declaration of empty interfaces
+        '@typescript-eslint/no-empty-interface': [2, { allowSingleExtends: false }],
+        // Disallow usage of the any type
+        '@typescript-eslint/no-explicit-any': [2, { fixToUnknown: false, ignoreRestArgs: false }],
+        // Disallow unnecessary parentheses
+        '@typescript-eslint/no-extra-parens': [2, 'all', noExtraParensOptions],
+        // Forbids the use of classes as namespaces
+        '@typescript-eslint/no-extraneous-class': [2, {
+          allowEmpty: false,
+          allowStaticOnly: true,
+          allowConstructorOnly: true,
+        }],
+        // Requires Promise-like values to be handled appropriately
+        '@typescript-eslint/no-floating-promises': 2,
+        // Disallow iterating over an array with a for-in loop
+        '@typescript-eslint/no-for-in-array': 2,
+        // Disallows explicit type declarations for variables or parameters initialized to a number, string, or boolean
+        '@typescript-eslint/no-inferrable-types': [2, {
+          ignoreParameters: false,
+          ignoreProperties: false,
+        }],
+        // Disallows magic numbers
+        '@typescript-eslint/no-magic-numbers': 0,
+        // Enforce valid definition of new and constructor
+        '@typescript-eslint/no-misused-new': 2,
+        // Avoid using promises in places not designed to handle them
+        '@typescript-eslint/no-misused-promises': [2, { checksVoidReturn: false, checksConditionals: true }],
+        // Disallow the use of custom TypeScript modules and namespaces
+        '@typescript-eslint/no-namespace': 2,
+        // Disallows non-null assertions using the ! postfix operator (Replaced by the optional chaining?)
+        '@typescript-eslint/no-non-null-assertion': 0,
+        // Disallow the use of parameter properties in class constructors
+        '@typescript-eslint/no-parameter-properties': 0,
+        // Disallows invocation of require()
+        '@typescript-eslint/no-require-imports': 2,
+        // Disallow aliasing this
+        '@typescript-eslint/no-this-alias': [2, { allowDestructuring: true }],
+        // Disallow the use of type aliases
+        '@typescript-eslint/no-type-alias': 0,
+        // Warns when a namespace qualifier is unnecessary
+        '@typescript-eslint/no-unnecessary-qualifier': 2,
+        // Warns if an explicitly specified type argument is the default for that type parameter
+        '@typescript-eslint/no-unnecessary-type-arguments': 2,
+        // Warns if a type assertion does not change the type of an expression
+        '@typescript-eslint/no-unnecessary-type-assertion': 2,
+        // Disallow unused variables
+        '@typescript-eslint/no-unused-vars': [2, noUnusedVarsOptions],
+        // Disallow the use of variables before they are defined
+        '@typescript-eslint/no-use-before-define': [2, noUseBeforeDefineOptions],
+        // Disallow unnecessary constructors
+        '@typescript-eslint/no-useless-constructor': 2,
+        // Disallows the use of require statements except in import statements
+        '@typescript-eslint/no-var-requires': 2,
+        // Prefer a ‘for-of’ loop over a standard ‘for’ loop if the index is only used to access the array being iterated
+        '@typescript-eslint/prefer-for-of': 2,
+        // Use function types instead of interfaces with call signatures
+        '@typescript-eslint/prefer-function-type': 2,
+        // Enforce includes method over indexOf method
+        // Disable as long as we support IE without polyfilling
+        '@typescript-eslint/prefer-includes': 0,
+        // Require the use of the namespace keyword instead of the module keyword to declare custom TypeScript modules
+        '@typescript-eslint/prefer-namespace-keyword': 0,
+        // Requires that private members are marked as readonly if they're never modified outside of the constructor
+        '@typescript-eslint/prefer-readonly': 2,
+        // Prefer RegExp#exec() over String#match() if no global flag is provided
+        '@typescript-eslint/prefer-regexp-exec': 2,
+        // Enforce the use of String#startsWith and String#endsWith instead of other equivalent methods of checking substrings
+        // Disable as long as we use indexOf === 0 for performance reasons
+        '@typescript-eslint/prefer-string-starts-ends-with': 0,
+        // Requires any function or method that returns a Promise to be marked async
+        '@typescript-eslint/promise-function-async': 0,
+        // Enforce the consistent use of either backticks, double, or single quotes
+        '@typescript-eslint/quotes': [0, 'single', 'avoid-escape'],
+        // Enforce giving compare argument to Array#sort
+        '@typescript-eslint/require-array-sort-compare': 2,
+        // Disallow async functions which have no await expression
+        '@typescript-eslint/require-await': 0,
+        // When adding two variables, operands must both be of type number or of type string
+        '@typescript-eslint/restrict-plus-operands': 2,
+        // Require or disallow semicolons instead of ASI
+        '@typescript-eslint/semi': [2, 'always', { omitLastInOneLineBlock: false }],
+        // Restricts the types allowed in boolean expressions
+        '@typescript-eslint/strict-boolean-expressions': [2, { ignoreRhs: true }],
+        // Sets preference level for triple slash directives versus ES6-style import declarations
+        '@typescript-eslint/triple-slash-reference': [2, { path: 'never', types: 'prefer-import', lib: 'never' }],
+        // Require consistent spacing around type annotations
+        '@typescript-eslint/type-annotation-spacing': [2, { before: false, after: true }],
+        // Requires type annotations to exist
+        '@typescript-eslint/typedef': 0,
+        // Enforces unbound methods are called with their expected scope
+        '@typescript-eslint/unbound-method': [2, { ignoreStatic: true }],
+        // Warns for any two overloads that could be unified into one by using a union or an optional/rest parameter
+        '@typescript-eslint/unified-signatures': 2,
+      }
+    }
+  ],
 };

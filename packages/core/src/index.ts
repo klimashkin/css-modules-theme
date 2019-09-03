@@ -2,8 +2,8 @@ import filterThemeWithPrefix from './utils/filterThemeWithPrefix';
 import getThemeCompositionDependencies from './utils/getThemeCompositionDependencies';
 import {
   Theme, ThemeOptions, Prefix,
-  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap, // eslint-disable-line no-unused-vars
-  PrefixedThemesCacheMap, ThemeDependenciesCacheMap,
+  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap,
+  PrefixedThemesCacheItem, PrefixedThemesCacheMap, ThemeDependencies, ThemeDependenciesCacheMap,
 } from './types';
 
 const composedThemesCacheMap: ComposedThemesCacheMap = new WeakMap();
@@ -22,7 +22,7 @@ const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
     ownPrefixedItems = [];
     prefixedThemesCacheMap.set(theme, ownPrefixedItems);
   } else {
-    ownPrefixeditem = ownPrefixedItems.find(item => item.theme === theme && item.prefix === prefix);
+    ownPrefixeditem = ownPrefixedItems.find((item: PrefixedThemesCacheItem) => item.theme === theme && item.prefix === prefix);
   }
 
   if (ownPrefixeditem === undefined) {
@@ -37,7 +37,7 @@ const getCachedPrefixedTheme = (theme: Theme, prefix: Prefix): Theme => {
  * Search theme object for a class composition and cache the result which will be used on subsequent calls with the same params
  * See {@link getThemeCompositionDependencies} for parameters list
  */
-const getCachedThemeCompositionDependencies = (theme: Theme) => {
+const getCachedThemeCompositionDependencies = (theme: Theme): ThemeDependencies | void => {
   let dependencies = dependenciesCacheMap.get(theme);
 
   if (dependencies === undefined) {
@@ -65,7 +65,7 @@ const getCachedThemeCompositionDependencies = (theme: Theme) => {
 const composeTheme = (options: ThemeOptions[]): Theme => {
   const first = options[0];
   let checkCache = first.noCache !== true;
-  let composeMethod = first.compose || Compose.Merge;
+  let composeMethod = typeof first.compose === 'string' ? first.compose : Compose.Merge;
   let resultTheme: Theme;
   let dependencies;
 
@@ -79,7 +79,7 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
     const {theme, prefix, compose, noParseComposes, noCache = false} = options[i];
     const parseComposes = typeof noParseComposes === 'boolean' ? noParseComposes === false : first.noParseComposes !== true;
 
-    if (compose) {
+    if (typeof compose === 'string') {
       composeMethod = compose;
     }
 
@@ -96,7 +96,7 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
         composedThemesCache = [];
         composedThemesCacheMap.set(theme, composedThemesCache);
       } else {
-        composedCachedItem = composedThemesCache.find(item =>
+        composedCachedItem = composedThemesCache.find((item: ComposedThemesCacheItem) =>
           item.againstTheme === resultTheme && item.prefix === prefix &&
           item.composeMethod === composeMethod && item.parseComposes === parseComposes
         );

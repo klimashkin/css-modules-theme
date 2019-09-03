@@ -61,7 +61,7 @@ export const composeThemeFromProps = <T extends ThemeProps>(
 
   if (Array.isArray(propsOrContext)) {
     for (const item of propsOrContext) {
-      if (item && item.theme) {
+      if (typeof item === 'object' && typeof item.theme === 'object') {
         themes.push({
           theme: item.theme,
           prefix: item.themePrefix,
@@ -71,7 +71,7 @@ export const composeThemeFromProps = <T extends ThemeProps>(
         });
       }
     }
-  } else if (propsOrContext.theme) {
+  } else if (typeof propsOrContext.theme === 'object') {
     themes.push({
       theme: propsOrContext.theme,
       prefix: propsOrContext.themePrefix,
@@ -95,15 +95,14 @@ export const composeThemeFromProps = <T extends ThemeProps>(
  *
  * const {theme, onClick, ...restProps} = mixThemeWithProps(styles, this.props);
  */
-export const mixThemeWithProps = <T extends ThemeProps>(
+export const mixThemeWithProps = <T extends ThemeProps, K extends T & {theme: Theme}>(
   ownTheme: Theme, propsOrContext: T | T[], options: ComposeOptions & {props?: T} = {}
-) => {
-  const props = options.props || (Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext);
+): Omit<K, 'themePrefix' | 'themeCompose' | 'themeNoCache' | 'themeNoParseComposes'> => {
+  const props = typeof options.props === 'object' ? options.props : Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext;
   const {
     themePrefix, themeCompose, themeNoCache, themeNoParseComposes, ...restProps
-  } = props;
+  } = props as K;
 
-  // @ts-ignore Ignore assigning to the same property until https://github.com/Microsoft/TypeScript/issues/28952
   restProps.theme = composeThemeFromProps(ownTheme, propsOrContext, options);
 
   return restProps;
