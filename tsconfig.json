@@ -1,10 +1,16 @@
 {
   "extends": "./tsconfig.compiler.json",
+
   "compilerOptions": {
-    "noEmit": true
+    "baseUrl": ".",
+    "paths": {
+      "@css-modules-theme/core": ["packages/core/src"],
+      "@css-modules-theme/core/types": ["packages/core/src/types"]
+    }
   },
+
   "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/react" }
+    { "path": "./packages/core/tsconfig.build.json" },
+    { "path": "./packages/react/tsconfig.build.json" }
   ]
 }

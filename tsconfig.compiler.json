@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["esnext"],
-    "noEmit": false,
+    "noEmit": true,
     "noEmitOnError": true,
 
     "composite": true,
@@ -12,7 +12,7 @@
     "declaration": true,
     "declarationMap": true,
     "skipLibCheck": true,
-    "listFiles": true,
+    "listFiles": false,
 
     "moduleResolution": "node",
     "esModuleInterop": true,

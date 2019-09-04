@@ -1,11 +1,8 @@
 {
-  "extends": "../../tsconfig.compiler.json",
+  "extends": "../../tsconfig.json",
+
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist",
-    "emitDeclarationOnly": true
-  },
-  "references": [
-    { "path": "../core" }
-  ]
+    "outDir": "./dist"
+  }
 }

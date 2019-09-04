@@ -1,5 +1,5 @@
 import {composeTheme, Compose} from '@css-modules-theme/core';
-import {Theme, Prefix} from '@css-modules-theme/core/dist/types';
+import {Theme, Prefix} from '@css-modules-theme/core/types';
 
 export {Theme, Prefix};
 

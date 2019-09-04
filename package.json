@@ -53,7 +53,7 @@
   "dependencies": {},
   "scripts": {
     "test": "jest --runInBand",
-    "types": "tsc --build --verbose",
+    "types": "tsc --build --clean && tsc --build --verbose",
     "types-watch": "tsc --build --watch",
     "bootstrap": "lerna bootstrap",
     "clean": "lerna exec -- rimraf dist",

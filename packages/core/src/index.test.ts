@@ -315,7 +315,7 @@ describe('With composition', () => {
   it('should return dependencies', () => {
     const dependencies = getCachedThemeCompositionDependencies(theme);
 
-    expect(dependencies !== undefined && dependencies.prototype).toBeUndefined();
+    expect(typeof dependencies === 'object' && dependencies.prototype).toBeUndefined();
     expect(dependencies).toEqual({
       one: ['two', 'three', 'four', 'five'],
       two: ['four'],
