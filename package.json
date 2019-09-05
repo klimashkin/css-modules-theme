@@ -53,13 +53,13 @@
   "dependencies": {},
   "scripts": {
     "test": "jest --runInBand",
-    "types": "tsc --build --clean && tsc --build --verbose",
+    "types": "tsc --build --clean && tsc --build",
     "types-watch": "tsc --build --watch",
     "bootstrap": "lerna bootstrap",
     "clean": "lerna exec -- rimraf dist",
     "rollup": "lerna exec --concurrency 2 -- rollup -c ./rollup.config.js",
     "lint": "eslint . --ext .js,.ts",
-    "release": "npm run lint && npm run clean && npm run types && npm run rollup && npm run test",
+    "release": "npm run lint && npm run test && npm run clean && npm run types && npm run rollup",
     "prepublishOnly": "npm run test"
   },
   "husky": {
