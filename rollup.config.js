@@ -21,6 +21,7 @@ const targets = {
       {spec: specs.ES5, ext: 'es'},
       {spec: specs.ES2015, ext: specs.ES2015},
       {spec: specs.ES2018, ext: specs.ES2018},
+      {spec: specs.ES2019, ext: specs.ES2019},
     ],
   },
 };

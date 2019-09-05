@@ -1,5 +1,5 @@
 export const specs = {
-  ES5: 'es5', ES2015: 'es2015', ES2018: 'es2018',
+  ES5: 'es5', ES2015: 'es2015', ES2018: 'es2018', ES2019: 'es2019',
 };
 
 export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlugins = () => []) => {
@@ -23,7 +23,7 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
         ...getExtraPlugins(specs.ES2015),
       ],
     };
-  } else if (spec === specs.ES2018) {
+  } else if (spec === specs.ES2018 || spec === specs.ES2019) {
     result = {
       presets: [
         ...getExtraPresets(specs.ES2018),

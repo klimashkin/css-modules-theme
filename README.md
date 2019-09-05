@@ -448,6 +448,7 @@ Modules under @css-modules-theme namespace are built with [rollup](https://githu
 * dist/[*name*].es.js - ES6-module bundle transpiled down to ES5 code
 * dist/[*name*].es2015.js - ES6-module bundle transpiled down to ES6 (2015) code, where, for instance, object rest/spread is transpiled to Object.assign
 * dist/[*name*].es2018.js - ES6-module bundle transpiled down to ES9 (2018) code, which basicall means no transpilation at the moment
+* dist/[*name*].es2019.js - ES6-module bundle transpiled down to ES10 (2019) code, which basicall means no transpilation at the moment
 
 Each of them has corresponding field in `package.json`:
 ```json
@@ -456,6 +457,7 @@ Each of them has corresponding field in `package.json`:
   "module": "dist/name.es.js",
   "es2015": "dist/name.es2015.js",
   "es2018": "dist/name.es2018.js",
+  "es2019": "dist/name.es2019.js",
 ```
 
 If you write simple website, support variety of browsers and prefer to insert script tags to the html head, then you can embed desired module like that: `<script src="https://unpkg.com/@css-modules-theme/react@@2.1.2/dist/react.umd.js"></script>`.
