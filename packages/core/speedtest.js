@@ -1,7 +1,7 @@
 /**
  * Run this using 'node -r esm ./packages/core/speedtest.js'
  */
-import {composeTheme} from './dist/core.es2018';
+import {composeTheme} from './dist/core.es2019';
 
 const themeIcon = {
   icon: 'Icon_icon',

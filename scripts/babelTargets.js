@@ -29,8 +29,6 @@ export const getPluginsForSpec = (spec, getExtraPresets = () => [], getExtraPlug
         ...getExtraPresets(specs.ES2018),
       ],
       plugins: [
-        // To make babel undersdand object-rest-spread syntax without transforming it
-        '@babel/plugin-syntax-object-rest-spread',
         ...getExtraPlugins(specs.ES2018),
       ],
     };

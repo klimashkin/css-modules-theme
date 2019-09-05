@@ -40,9 +40,9 @@ export default function ({packageName, umdName, input, getExtraConfig = () => {}
           },
           plugins: _.compact([
             resolve({
+              extensions: ['.ts', '.tsx'],
               customResolveOptions: {
                 moduleDirectory: 'node_modules',
-                extensions: ['.ts', '.tsx'],
               },
             }),
             typescript({
@@ -56,6 +56,12 @@ export default function ({packageName, umdName, input, getExtraConfig = () => {}
                   composite: false,
                   declaration: false,
                   declarationMap: false,
+
+                  baseUrl: '.',
+                  paths: {
+                    '@css-modules-theme/core': ['packages/core/src'],
+                    '@css-modules-theme/core/types': ['packages/core/src/types'],
+                  },
                 },
               },
             }),
