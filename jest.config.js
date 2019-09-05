@@ -1,3 +1,6 @@
+const {pathsToModuleNameMapper} = require('ts-jest/utils');
+const {compilerOptions} = require('./tsconfig');
+
 module.exports = {
   automock: false,
   bail: false,
@@ -16,6 +19,7 @@ module.exports = {
     'js',
     'jsx',
   ],
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {prefix: '<rootDir>'}),
   transform: {
     '^.+\\.[tj]sx?$': 'ts-jest',
   },
