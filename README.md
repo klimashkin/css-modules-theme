@@ -6,6 +6,7 @@
 
 - [CSS Modules](#css-modules)
 - [Theming](#theming)
+- [Principles](#principles)
 - [Packages](#core)
   - [Core](#core)
     * [Composition types](#composition-types)
@@ -150,8 +151,9 @@ Theming is the answer.
 
 How will a page that uses Button component modify its `primary` styling if it doesn't know real corresponding `ab` classname? With React, we can create a boolean prop in a Button component for each possible style modification. Adding extra prop(s) for css logic can be managable for simple components. As the complexity grows, a component's props combination can grow exponentially making prop management challenging.
 
-The solution to avoid overwhelming a component with boolean props is to take two css-module objects, own one and from parent, and merge them together to get a final object. The first object can be called original theme, or own theme of the component, and the parent one can be called injecting theme since we mix it into the first one. 
+The solution to avoid overwhelming a component with boolean props is to take two css-module objects, own one and the from parent, and merge them together to get a final object. The first object can be called original theme, or *own theme* of the component, and the parent one can be called injecting theme since we mix it into the first one. 
 
+## Principles
 **@css-modules-theme** is a project based on two simple ideas:
 
 * First, themes composition must be fast. That means, no producing class instance on each composition, [no hocs](#other-libraries), no fancy multistep map/reduces or third-party helpers, just a few straightforward classic JS loops with minimum transformations. 
@@ -160,6 +162,8 @@ The solution to avoid overwhelming a component with boolean props is to take two
 To achieve that @css-modules-theme puts injected theme as a key into WeakMap (to free up memory when injected theme is not needed anymore) and composed theme along with options into a value of that map. 
 So when you call composeTheme for the first time, it will do the composition and put the result into cache, and all consequent calls with the same arguments will just return the same result from that cache.
 From the table example mentioned in [Other Libraries](#other-libraries) section, the new table implementation with **css-modules-theme** was able to reduce the number of compositions from 761 to 42 and total page rendering time (with all content) by **30%**.
+
+* Third, deliverables are written in TypeScript and covered with all kind of tests using Jest.
 
 Project includes two (for now) scoped packages: [@css-modules-theme/core](https://github.com/klimashkin/css-modules-theme/tree/master/packages/core) and [@css-modules-theme/react](https://github.com/klimashkin/css-modules-theme/tree/master/packages/react)
 
@@ -432,13 +436,15 @@ render() {
 ```
 
 ## Other Libraries
-Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/FriendsOfReactJS/react-css-themr). It focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  Unfortunately, it does it by wrapping all components with HOC without supporting forwardRef from the latest React.
-Why "unfortunately"? We can implement a forwardRef support with a HOC but using HOC leads to significant performance degradation. Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab of DevTools noticing that the first render of your page takes hundreds of milliseconds.
+Several projects emerged in the past few years, one of which is [react-css-themr](https://github.com/FriendsOfReactJS/react-css-themr). It is focused on theming in React, but the way of merging themes from parent component into child is pretty generic and flexible. It solves the theming problem!  
+Unfortunately, it does it by wrapping all components with HOCs.
+Why "unfortunately"? Because using HOC leads to a significant performance degradation on big projects. 
+Let's imagine we have a big React application with hundreds of basic components like Link, Button, Icon, Tag, Menu, Popup, etc... All of those components have their own css-module with styling, and each of them should be themeable. React is powerful because it gives us easy components composition. If you want Button or MenuItem be a link with href, you just make them render Link component in their render methods with passing theme so Link would look like Button or MenuItem. Many basic components might render Icon inside them and style (theme) that Icon differently. Now let's imagine you have a lot of content on a page, for instance Table with 50 rows and 10 columns (not big), and in each cell you have basic component that renders inside some content plus another basic component and so on. You end up with 500 cells that renders let's say ~2000 lightweight basic components. All of them are themeable, so each of them have HOC on top plus forwardRef, and now you have ~6000 components to render. You will start to cry while profiling rendering in Performance tab of DevTools noticing that the first render of your page takes hundreds of milliseconds.
 
 But let's step back and think for a second. What does HOC do? It creates component instance for each wrapped instance of your component and merge your style object with theme object from a parent component instance. If we have 2000 identical components with different content, it will do it 2000 times. Hm, that doesn't sound right, because result theme object will be essentially the same for all of them. The nature of HOC multiplies isolated instances of your components by 2-3 times.
 
 What if we could generate result theme for given two themes only once and then just reuse it in all similar components?
-And with `css-modules-theme` we can and we get it automatically.
+And with `css-modules-theme` [we can and we get it automatically](#principles).
 
 ## Bundling
 
