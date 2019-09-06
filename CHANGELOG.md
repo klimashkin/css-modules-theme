@@ -1,6 +1,11 @@
 # Changelog
 
-## 2.1.3 (2019-0-23)
+## 2.2.0 (2019-09-05)
+ * Move to TypeScript 3.6
+ * Use @typescript-eslint withESLint 6.3.0
+ * Update Babel, Rollup, Jest and otherdev dependencies
+
+## 2.1.3 (2019-01-23)
  * Make sure dependency class names are replaced as a whole words, not as subsets of other classnames
  * Update dependencies
  * Update tests
