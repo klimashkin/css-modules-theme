@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.2.2 (2021-06-09)
+ * Update missed index.d.ts typings from 2.2.1
+
 ## 2.2.1 (2021-06-08)
  * Use UnionOmit for mixThemeWithProps to distribute unions (by [Hayden Chen](https://github.com/chbdetta))
  * Accept React 17 in peerDependencies
