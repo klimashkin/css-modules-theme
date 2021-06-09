@@ -84,6 +84,8 @@ export const composeThemeFromProps = <T extends ThemeProps>(
   return composeTheme(themes);
 };
 
+type UnionOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
+
 /**
  * Helper on top of composeThemeFromProps,
  * that returns new props object with deprived theme* properties from original one and mixed result `theme`
@@ -97,7 +99,7 @@ export const composeThemeFromProps = <T extends ThemeProps>(
  */
 export const mixThemeWithProps = <T extends ThemeProps, K extends T & {theme: Theme}>(
   ownTheme: Theme, propsOrContext: T | T[], options: ComposeOptions & {props?: T} = {}
-): Omit<K, 'themePrefix' | 'themeCompose' | 'themeNoCache' | 'themeNoParseComposes'> => {
+): UnionOmit<K, 'themePrefix' | 'themeCompose' | 'themeNoCache' | 'themeNoParseComposes'> => {
   const props = typeof options.props === 'object' ? options.props : Array.isArray(propsOrContext) ? propsOrContext[0] : propsOrContext;
   const {
     themePrefix, themeCompose, themeNoCache, themeNoParseComposes, ...restProps
@@ -105,7 +107,7 @@ export const mixThemeWithProps = <T extends ThemeProps, K extends T & {theme: Th
 
   restProps.theme = composeThemeFromProps(ownTheme, propsOrContext, options);
 
-  return restProps;
+  return restProps as UnionOmit<K, 'themePrefix' | 'themeCompose' | 'themeNoCache' | 'themeNoParseComposes'>;
 };
 
 export {Compose};
