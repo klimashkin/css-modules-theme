@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.2.1 (2021-06-08)
+ * Use UnionOmit for mixThemeWithProps to distribute unions (by [Hayden Chen](https://github.com/chbdetta))
+ * Accept React 17 in peerDependencies
+
 ## 2.2.0 (2019-09-05)
  * Move to TypeScript 3.6
  * Use @typescript-eslint withESLint 6.3.0
@@ -9,10 +13,10 @@
  * Make sure dependency class names are replaced as a whole words, not as subsets of other classnames
  * Update dependencies
  * Update tests
- 
+
 ## 2.1.2 (2018-12-31)
  * Properly handle classnames with the same beginning (2.1.1 was not publish correctly)
- 
+
 ## 2.1.0 (2018-12-31)
  * Properly handle static `composes` css rule during runtime composition with `composeTheme`.
  `Icon.css`:
@@ -51,7 +55,7 @@
   //   button: 'x',
   //   'error-icon': 'y',
   // }
- 
+
  composeTheme([{theme: stylesIcon}, {theme: stylesButton, prefix: 'error-'}]);
  // Result:
  // {
@@ -60,8 +64,8 @@
  //   large: 'c a y',
  // }
  ```
- 
- * Core: 
+
+ * Core:
    * Add `noParseComposes` boolean option into `composeTheme` that can skip parsing theme for static `composes` rule dependencies.
  * React:
    * Add corresponding `themeNoParseComposes` option to props/context objects
@@ -70,8 +74,8 @@
  * Multiple themes composition! Now you can compose more than two themes at once, which is useful in React when you want to merge own component styles with ones from props and from react context.
  * Rewrite project in TypeScript!
  * Add testing with Jest!
- 
- * Core: 
+
+ * Core:
    * Rename `getTheme` into `composeTheme` that now takes an array of options for each theme
  * React:
    * Rename `getThemeFromProps` into `composeThemeFromProps` that now can take an array as a second argument to get props and context in desired order to set their precedence.
