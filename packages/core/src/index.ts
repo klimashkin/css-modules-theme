@@ -202,6 +202,12 @@ const composeTheme = (options: ThemeOptions[]): Theme => {
 };
 
 export {
-  Compose, composeTheme, filterThemeWithPrefix, getThemeCompositionDependencies,
+  Theme, ThemeOptions, Prefix,
+  Compose, ComposedThemesCacheItem, ComposedThemesCacheMap,
+  PrefixedThemesCacheItem, PrefixedThemesCacheMap, ThemeDependencies, ThemeDependenciesCacheMap,
+};
+
+export {
+  composeTheme, filterThemeWithPrefix, getThemeCompositionDependencies,
   getCachedPrefixedTheme, getCachedThemeCompositionDependencies,
 };
