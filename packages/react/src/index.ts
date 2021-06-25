@@ -1,5 +1,4 @@
-import {composeTheme, Compose} from '@css-modules-theme/core';
-import {Theme, Prefix} from '@css-modules-theme/core/types';
+import {composeTheme, Compose, Theme, Prefix} from '@css-modules-theme/core';
 
 export {Theme, Prefix};
 
