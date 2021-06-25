@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.3.0 (2021-06-25)
+* Fix unresolvable types from 'core' (by [Hayden Chen](https://github.com/chbdetta))
+
 ## 2.2.2 (2021-06-09)
  * Update missed index.d.ts typings from 2.2.1
 
