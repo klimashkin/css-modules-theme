@@ -1,6 +1,6 @@
 {
   "name": "@css-modules-theme/react",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "description": "Fast CSS Modules theming composition for react",
   "author": "Paul Klimashkin <paul.klimashkin@illumio.com>",
   "homepage": "https://github.com/klimashkin/css-modules-theme/tree/master/packages/react#readme",
@@ -40,7 +40,7 @@
     "url": "https://github.com/klimashkin/css-modules-theme/issues"
   },
   "peerDependencies": {
-    "react": "^15.0.0 || ^16.0.0"
+    "react": "^15.0.0 || ^16.0.0 || ^17.0.0"
   },
   "dependencies": {
     "@css-modules-theme/core": "~2.2.0"
