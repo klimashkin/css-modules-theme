@@ -50,7 +50,7 @@ From the above css definition, depending on css-loader setting (when using a mod
   background-color: blue;  
 }  
 ```
-And in JavaSctipt you get the following mapping `styles` object after doing `import styles from './Button.css'`:  
+And in JavaScript you get the following mapping `styles` object after doing `import styles from './Button.css'`:  
 ```javascript  
 { 
   button: 'aa',
